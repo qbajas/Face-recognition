@@ -18,4 +18,12 @@ http://cdn.intechweb.org/pdfs/197.pdf - chyba to samo co wyzej troche inaczej
 
 Biblioteki:
 http://www2.thu.edu.tw/~wenwei/ - JavaStat - PCA i LDA
-ENCOG - sieci
+ENCOG http://www.heatonresearch.com/encog - sieci
+
+/////////////////////////////////////////////////////////////
+Biblioteki SSN:
+http://neuroph.sourceforge.net - wbudowane przetwarzanie obrazow
+http://www.heatonresearch.com/encog
+
+Tutoriale/przykłady:
+http://netbeans.dzone.com/articles/neuroph-smart-java-apps-neural-1 - niezly tutorial
