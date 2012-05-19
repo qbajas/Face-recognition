@@ -23,7 +23,8 @@ import javax.imageio.stream.FileImageOutputStream;
  * @author Michal
  */
 public class TrainingSetScalling {
-
+    private static final int WIDTH =640/6, HEIGHT=480/6;
+    
     public static void main(String[] args) {
         new TrainingSetScalling().resizeAll("dataSet");
     }
@@ -72,14 +73,17 @@ public class TrainingSetScalling {
                 System.out.println("Resizing " + image.getName());
                 try {
                     BufferedImage img = ImageIO.read(image);
-                    output = new BufferedImage(320, 240, BufferedImage.TYPE_BYTE_GRAY);
+                    output = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
 
                     g = output.createGraphics();
                     g.setComposite(AlphaComposite.Src);
-                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                     g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g.drawImage(img, 0, 0, 320, 240, null);
+                    g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                    
+                    g.drawImage(img, 0, 0, WIDTH, HEIGHT, null);
                     g.dispose();
 
                     outStream = new FileImageOutputStream(image);

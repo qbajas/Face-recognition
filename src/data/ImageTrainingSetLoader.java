@@ -60,8 +60,9 @@ public class ImageTrainingSetLoader implements DataLoader{
             public boolean accept(File pathname) {
                 String name = pathname.getName();
                 for(String s:imagesPath){
-                    if(name.endsWith(s))
+                    if(name.toLowerCase().startsWith("a") && name.toLowerCase().endsWith(s.toLowerCase())){
                         return true;
+                    }
                 }
                 return false;
             }
@@ -72,15 +73,15 @@ public class ImageTrainingSetLoader implements DataLoader{
         int subjectsCount = subFolders.length;
         
         for(File folder:subFolders){
-            images = folder.listFiles(jpgFilter);
             subjectNbr = Integer.parseInt( folder.getName().replace("Subject", "") );
-            
+            System.out.println(folder.getName());
+            images = folder.listFiles(jpgFilter);
+
             double output[] = new double[subjectsCount];
             output[subjectNbr-1] = 1.0;
             
-            System.out.println(folder.getName());
-
             for(File image:images){
+                
                 outputs.add(output);
                 try {
                     inputs.add(imgProcessor.process(ImageIO.read(image)));
