@@ -9,7 +9,8 @@ import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 
 /**
- *
+ * Klasa do wczytywania wszystkich zdjec twarzy z katalogu bazy obrazow, pogrupowanych
+ * w foldery odpowiadajace poszczegolnym osobom
  * @author Michal
  */
 public class ImageTrainingSetLoader implements DataLoader{
@@ -22,11 +23,20 @@ public class ImageTrainingSetLoader implements DataLoader{
     private ImageProcessor imgProcessor;
     private DataProcessor dataProcessor;
     
+    /**
+     * Umożliwia ustawienie dodatkowych
+     * @param imgProcessor
+     * @param dataProcessor 
+     */
     public ImageTrainingSetLoader(ImageProcessor imgProcessor, DataProcessor dataProcessor) {
         this.imgProcessor = imgProcessor;
         this.dataProcessor = dataProcessor;
     }
 
+    /**
+     * Domyslny konstruktor, konwersja obrazu do odcieni szarosci, brak dalszej
+     * konwersji danych
+     */
     public ImageTrainingSetLoader() {
         imgProcessor = new ImageToVectorProcessor(true);
         dataProcessor = new DataProcessor();

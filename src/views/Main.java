@@ -1,12 +1,14 @@
 package views;
 
 import data.ImageTrainingSetLoader;
+import data.PCADataProcessor;
 import java.awt.Color;
 import java.awt.EventQueue;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.encog.ml.data.MLDataSet;
 
 public class Main {
 
@@ -19,7 +21,9 @@ public class Main {
             
             /////////////TEST/////////////////////////////////////////////////////////////
           ImageTrainingSetLoader loader = new ImageTrainingSetLoader();
-          loader.loadData("dataSet");
+          loader.setDataProcessor(new PCADataProcessor());
+          
+          MLDataSet training = loader.loadData("dataSet");
             ////////////////////////////////////////////////////////////////////////
             
             

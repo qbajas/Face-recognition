@@ -18,4 +18,8 @@ public class DataProcessor {
     public double[][] processData(double[][] data) {
         return data;
     }
+    
+    public double[] getProjection(double[] data){
+        return data;
+    }
 }
