@@ -3,7 +3,8 @@ package data;
 import java.awt.image.BufferedImage;
 
 /**
- * Klasa do konwersji obrazu na wektor wartosci liczbowych
+ * Klasa do konwersji obrazu na wektor wartosci liczbowych, skaluje obraz
+ * aby zmniejszyc ilosc pikseli
  *
  * @author Michal
  */
@@ -26,8 +27,10 @@ public class ImageToVectorProcessor implements ImageProcessor {
         int w = img.getWidth();
         int h = img.getHeight();
         double[] pixels = null;
-        pixels = img.getRaster().getPixels(0, 0, w, h, pixels);
-        if (convert2Gray) 
+        
+        pixels = img.getRaster().getPixels(0, 0, w, h, (double[])null);
+        
+        if (convert2Gray &&img.getColorModel().getColorSpace().getNumComponents()==3 )
             pixels = RGB2Gray(pixels);
         return pixels;
     }

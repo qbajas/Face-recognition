@@ -1,19 +1,12 @@
 package views;
 
-import data.ImageToVectorProcessor;
-import data.LDADataProcessor;
-import data.PCADataProcessor;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import data.ImageTrainingSetLoader;
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.awt.EventQueue;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Main {
 
@@ -25,17 +18,8 @@ public class Main {
 	public static void main(String[] args) {
             
             /////////////TEST/////////////////////////////////////////////////////////////
-//            BufferedImage img = null;
-//            try {
-//                File f = new File("dataSet/Subject01");
-//                img = ImageIO.read(new File("dataSet/Subject01/test.Jpg"));
-//                double data[] = new ImageToVectorProcessor(true).process(img);
-//                double PCAData[] = new PCADataProcessor().processData(data);
-//                double LDAData[] = new LDADataProcessor().processData(data);
-//                
-//                System.out.println("lol");
-//            } catch (IOException e) {
-//                System.out.println(e.getMessage());
+          ImageTrainingSetLoader loader = new ImageTrainingSetLoader();
+          //loader.loadData("dataSet");
             ////////////////////////////////////////////////////////////////////////
             
             
