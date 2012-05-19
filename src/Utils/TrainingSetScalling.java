@@ -25,7 +25,7 @@ import javax.imageio.stream.FileImageOutputStream;
 public class TrainingSetScalling {
 
     public static void main(String[] args) {
-         new TrainingSetScalling().resizeAll("dataSet");
+        new TrainingSetScalling().resizeAll("dataSet");
     }
 
     public void resizeAll(String source) {
@@ -56,17 +56,17 @@ public class TrainingSetScalling {
         Graphics2D g = null;
 
         Iterator iter = ImageIO.getImageWritersByFormatName("jpeg");
-        ImageWriter writer = (ImageWriter)iter.next();
+        ImageWriter writer = (ImageWriter) iter.next();
         ImageWriteParam iwp = writer.getDefaultWriteParam();
         iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         iwp.setCompressionQuality(1);
-        
+
         FileImageOutputStream outStream;
-        
+
         for (File folder : subFolders) {
             images = folder.listFiles(jpgFilter);
 
-            
+
 
             for (File image : images) {
                 System.out.println("Resizing " + image.getName());
@@ -81,14 +81,14 @@ public class TrainingSetScalling {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g.drawImage(img, 0, 0, 320, 240, null);
                     g.dispose();
-                    
+
                     outStream = new FileImageOutputStream(image);
                     writer.setOutput(outStream);
                     IIOImage outImg = new IIOImage(output, null, null);
                     writer.write(null, outImg, iwp);
                     outStream.close();
                     writer.reset();
-                    
+
                 } catch (IOException ex) {
                     throw new RuntimeException(ex.getMessage());
                 }

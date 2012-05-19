@@ -19,7 +19,7 @@ public class Main {
             
             /////////////TEST/////////////////////////////////////////////////////////////
           ImageTrainingSetLoader loader = new ImageTrainingSetLoader();
-          //loader.loadData("dataSet");
+          loader.loadData("dataSet");
             ////////////////////////////////////////////////////////////////////////
             
             

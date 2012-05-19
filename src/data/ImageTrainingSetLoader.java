@@ -5,7 +5,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
-import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLDataSet;
 
 /**
  *
@@ -13,26 +14,13 @@ import org.encog.ml.data.MLData;
  */
 public class ImageTrainingSetLoader implements DataLoader{
     
-    private static String[] imagesPath =
-        {
-            "_0.Jpg",
-            "_+05.Jpg",
-            "_+25.Jpg", 
-            "_+45.Jpg", 
-            "_+75.Jpg", 
-            
-            "_-05.Jpg",
-            "_-25.Jpg", 
-            "_-45.Jpg", 
-            "_-75.Jpg",
-            
-            "_+5.Jpg",
-            "_-5.Jpg"
-        };
+    private static String[] imagesPath ={
+       "_0.Jpg", "_+05.Jpg", "_+25.Jpg", "_+45.Jpg",  "_+75.Jpg", "_-05.Jpg", 
+       "_-25.Jpg", "_-45.Jpg", "_-75.Jpg",  "_+5.Jpg","_-5.Jpg"
+    };
     
     private ImageProcessor imgProcessor;
     private DataProcessor dataProcessor;
-
     
     public ImageTrainingSetLoader(ImageProcessor imgProcessor, DataProcessor dataProcessor) {
         this.imgProcessor = imgProcessor;
@@ -45,7 +33,7 @@ public class ImageTrainingSetLoader implements DataLoader{
     }
     
     @Override
-    public MLData loadData(String source) {
+    public MLDataSet loadData(String source) {
         File mainFolder = new File(source);
         File subFolders[] = mainFolder.listFiles(new FileFilter() {
             @Override
@@ -91,8 +79,20 @@ public class ImageTrainingSetLoader implements DataLoader{
                 }
             }
         }
-   
-        throw new RuntimeException("not supported");
+        
+        if(inputs.size()!=outputs.size())
+            throw new RuntimeException("inputs!=outputs");
+        
+        double [][] annInputs = new double[inputs.size()][];
+        double [][] annOutputs = new double[outputs.size()][];
+        
+        inputs.toArray(annInputs);
+        outputs.toArray(annOutputs);
+        
+        annInputs = dataProcessor.processData(annInputs);
+        
+        MLDataSet trainingSet = new BasicMLDataSet(annInputs, annOutputs);        
+        return trainingSet;
     }
     
     @Override
