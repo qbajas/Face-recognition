@@ -1,13 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package data;
 
 /**
- *
+ * Klasa przetwarzajaca wstepnie dane wejsciowe dla sieci.
  * @author Michal
  */
-public interface DataProcessor {
+public class DataProcessor {
     
+    /**
+     * Funkcja zwraca przetworzone dane wejsciowe dla sieci. Podstawowa implementacja
+     * nie wykonuje zadnych operacji na wejsciu. Umozliwi to testowanie sieci
+     * bez stosowania PCA oraz LDA.
+     * @param data Dane wejsciowe
+     * @return Przetworzone dane wejsciowe dla sieci
+     */
+    public double[] processData(double[] data){
+        return data;
+    }
 }

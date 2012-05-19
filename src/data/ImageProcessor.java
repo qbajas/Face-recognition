@@ -1,15 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package data;
 
-import java.awt.Image;
-
 /**
- *
+ * Interfejs dla klas przetwarzajacych obraz wejsciowy na dane numeryczne
  * @author Michal
  */
 public interface ImageProcessor {
-    double[] process(Image img);
+    /**
+     * Zwraca liczbowe wartosci pikseli
+     * @param img Obraz wejsciowy
+     * @return Wartosci pikseli po przetworzeniu obrazu
+     */
+    double[] process(java.awt.image.BufferedImage img);
 }

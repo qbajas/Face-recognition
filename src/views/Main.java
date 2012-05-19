@@ -1,11 +1,18 @@
 package views;
 
+import data.ImageToVectorProcessor;
+import data.LDADataProcessor;
+import data.PCADataProcessor;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
 public class Main {
@@ -16,6 +23,22 @@ public class Main {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+            
+            /////////////TEST/////////////////////////////////////////////////////////////
+//            BufferedImage img = null;
+//            try {
+//                File f = new File("dataSet/Subject01");
+//                img = ImageIO.read(new File("dataSet/Subject01/test.Jpg"));
+//                double data[] = new ImageToVectorProcessor(true).process(img);
+//                double PCAData[] = new PCADataProcessor().processData(data);
+//                double LDAData[] = new LDADataProcessor().processData(data);
+//                
+//                System.out.println("lol");
+//            } catch (IOException e) {
+//                System.out.println(e.getMessage());
+            ////////////////////////////////////////////////////////////////////////
+            
+            
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
