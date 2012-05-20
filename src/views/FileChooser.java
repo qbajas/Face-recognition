@@ -14,7 +14,7 @@ public class FileChooser {
 	    {
 	        window=new JFrame();
 	        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	        jfc=new JFileChooser();
+	        jfc=new JFileChooser("dataSet");
 	    }
 
 	    

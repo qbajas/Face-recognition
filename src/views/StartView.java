@@ -17,6 +17,7 @@ import controllers.StartController;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
 
 public class StartView {
 
@@ -32,6 +33,10 @@ public class StartView {
 		controller = c;
 	}
 
+	
+	public JPanel leftPanel = new JPanel();
+	public JLabel yourImageLabel = new JLabel("");
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -41,19 +46,24 @@ public class StartView {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JButton btnLoadAnImage = new JButton("Load an image");
+		JButton btnLoadAnImage = new JButton("Load an image");		
+		final StartView view = this;
 		btnLoadAnImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.openFileChooser();
+				controller.openFileChooser(view);
 			}
 		});
 		btnLoadAnImage.setBounds(39, 395, 300, 23);
 		frame.getContentPane().add(btnLoadAnImage);
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		panel.setBounds(39, 36, 300, 348);
-		frame.getContentPane().add(panel);
+		
+		leftPanel.setBackground(Color.WHITE);
+		leftPanel.setBounds(39, 36, 300, 348);
+		frame.getContentPane().add(leftPanel);
+		
+		
+		yourImageLabel.setIcon(new ImageIcon("img/anonymousAvatar.png"));
+		leftPanel.add(yourImageLabel);
 		
 		JLabel lblYourImage = new JLabel("Your image:");
 		lblYourImage.setHorizontalAlignment(SwingConstants.CENTER);
@@ -64,6 +74,11 @@ public class StartView {
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(445, 36, 300, 348);
 		frame.getContentPane().add(panel_1);
+		
+		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setIcon(new ImageIcon("img/anonymousAvatar.png"));
+		panel_1.add(lblNewLabel_1);
+		
 		
 		JLabel lblPersonFound = new JLabel("Person found:");
 		lblPersonFound.setHorizontalAlignment(SwingConstants.CENTER);
