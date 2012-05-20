@@ -17,5 +17,13 @@ public interface DataLoader {
 
     ImageProcessor getImageProcessor();
 
-    MLDataSet loadData(String source);
+    void loadData(String source);
+    
+    public void ShuffleData();
+    
+    MLDataSet getTrainingSet();
+    
+    MLDataSet getGeneralizationSet();
+    
+    MLDataSet getTestSet();
 }

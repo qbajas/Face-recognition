@@ -1,5 +1,8 @@
 package views;
 
+import ann.ANNManager;
+import data.DataProcessor;
+import data.ImageToVectorProcessor;
 import data.ImageTrainingSetLoader;
 import data.PCADataProcessor;
 import java.awt.Color;
@@ -20,10 +23,9 @@ public class Main {
 	public static void main(String[] args) {
             
             /////////////TEST/////////////////////////////////////////////////////////////
-          ImageTrainingSetLoader loader = new ImageTrainingSetLoader();
-          loader.setDataProcessor(new PCADataProcessor());
-          
-          MLDataSet training = loader.loadData("dataSet");
+          ANNManager ann = new ANNManager(new DataProcessor(), new ImageToVectorProcessor(true));
+          ann.getANN(8480, 100, 40, true);
+          ann.train(ANNManager.TrainMethod.BackPropagation);
             ////////////////////////////////////////////////////////////////////////
             
             

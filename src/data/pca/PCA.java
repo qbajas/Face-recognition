@@ -13,9 +13,9 @@ import org.ejml.ops.SingularOps;
  * @author Michal
  */
 public class PCA implements Serializable{
-    private static final long serialVersionUID = 10L;
+    private static final long serialVersionUID = 11L;
     private DenseMatrix64F components;
-    private DenseMatrix64F data = new DenseMatrix64F(1, 1);
+    transient private DenseMatrix64F data = new DenseMatrix64F(1, 1); // potrzebne tylko do stworzenie skladowych, pozniej juz nie
     private double mean[];
     private int componentsCount;
 
@@ -34,7 +34,7 @@ public class PCA implements Serializable{
      * skladowych glownych
      *
      * @param input
-     * @param components
+     * @param c liczba skladowych glownych
      */
     PCA(double[][] input, int c) {
 

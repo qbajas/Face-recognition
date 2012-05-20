@@ -15,6 +15,10 @@ import org.encog.ml.data.basic.BasicMLDataSet;
  */
 public class ImageTrainingSetLoader implements DataLoader{
     
+    private MLDataSet trainingSet;
+    private MLDataSet testSet;
+    private MLDataSet generalizationSet;
+
     private static String[] imagesPath ={
        "_0.Jpg", "_+05.Jpg", "_+25.Jpg", "_+45.Jpg",  "_+75.Jpg", "_-05.Jpg", 
        "_-25.Jpg", "_-45.Jpg", "_-75.Jpg",  "_+5.Jpg","_-5.Jpg"
@@ -43,7 +47,7 @@ public class ImageTrainingSetLoader implements DataLoader{
     }
     
     @Override
-    public MLDataSet loadData(String source) {
+    public void loadData(String source) {
         File mainFolder = new File(source);
         File subFolders[] = mainFolder.listFiles(new FileFilter() {
             @Override
@@ -102,8 +106,7 @@ public class ImageTrainingSetLoader implements DataLoader{
         
         annInputs = dataProcessor.processData(annInputs);
         
-        MLDataSet trainingSet = new BasicMLDataSet(annInputs, annOutputs);        
-        return trainingSet;
+       trainingSet = new BasicMLDataSet(annInputs, annOutputs);        
     }
     
     @Override
@@ -124,5 +127,26 @@ public class ImageTrainingSetLoader implements DataLoader{
     @Override
     public ImageProcessor getImageProcessor() {
         return imgProcessor;
+    }
+
+    @Override
+    public void ShuffleData() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public MLDataSet getTrainingSet() {
+        loadData("dataSet");
+        return trainingSet;
+    }
+
+    @Override
+    public MLDataSet getGeneralizationSet() {
+        return generalizationSet;
+    }
+
+    @Override
+    public MLDataSet getTestSet() {
+        return testSet;
     }
 }
