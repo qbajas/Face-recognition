@@ -44,12 +44,12 @@ public class StartView {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+		frame = new JFrame("Neural Network Face Recognition System");
 		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JButton btnLoadAnImage = new JButton("Load an image");		
+		JButton btnLoadAnImage = new JButton("1. Load an image");		
 		final StartView view = this;
 		btnLoadAnImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -92,7 +92,7 @@ public class StartView {
 		lblPersonFound.setBounds(445, 11, 300, 14);
 		frame.getContentPane().add(lblPersonFound);
 		
-		JButton btnFindAPerson = new JButton("Find a person !");
+		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.findPerson();
