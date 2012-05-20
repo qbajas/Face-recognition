@@ -26,4 +26,9 @@ public interface DataLoader {
     MLDataSet getGeneralizationSet();
     
     MLDataSet getTestSet();
+    
+    public int getInputLength(String path);
+    
+    public boolean isLoaded();
+    
 }

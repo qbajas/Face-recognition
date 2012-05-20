@@ -1,5 +1,6 @@
 package data;
 
+import Utils.Config;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -18,7 +19,8 @@ public class ImageTrainingSetLoader implements DataLoader{
     private MLDataSet trainingSet;
     private MLDataSet testSet;
     private MLDataSet generalizationSet;
-
+    private boolean loaded = false;
+    
     private static String[] imagesPath ={
        "_0.Jpg", "_+05.Jpg", "_+25.Jpg", "_+45.Jpg",  "_+75.Jpg", "_-05.Jpg", 
        "_-25.Jpg", "_-45.Jpg", "_-75.Jpg",  "_+5.Jpg","_-5.Jpg"
@@ -106,7 +108,8 @@ public class ImageTrainingSetLoader implements DataLoader{
         
         annInputs = dataProcessor.processData(annInputs);
         
-       trainingSet = new BasicMLDataSet(annInputs, annOutputs);        
+       trainingSet = new BasicMLDataSet(annInputs, annOutputs);   
+       loaded=true;
     }
     
     @Override
@@ -136,7 +139,6 @@ public class ImageTrainingSetLoader implements DataLoader{
 
     @Override
     public MLDataSet getTrainingSet() {
-        loadData("dataSet");
         return trainingSet;
     }
 
@@ -148,5 +150,22 @@ public class ImageTrainingSetLoader implements DataLoader{
     @Override
     public MLDataSet getTestSet() {
         return testSet;
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return loaded;
+    }
+    
+    /**
+     * Zwraca dlugosc pojedynczej probki
+     * @return 
+     */
+    @Override
+    public int getInputLength(String path){
+        try {
+            return dataProcessor.getProjection(imgProcessor.process(ImageIO.read(new File(path)))).length;
+        } catch (IOException ex) {}
+        return -1;
     }
 }

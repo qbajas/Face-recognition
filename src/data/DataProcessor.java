@@ -22,4 +22,8 @@ public class DataProcessor {
     public double[] getProjection(double[] data){
         return data;
     }
+    
+    public String getName(){
+        return "none";
+    }
 }

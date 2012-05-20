@@ -1,17 +1,13 @@
 package ann;
 
+import Utils.Config;
+import Utils.Logger;
+import data.DataLoader;
 import data.DataProcessor;
 import data.ImageProcessor;
 import data.ImageTrainingSetLoader;
-import java.awt.image.BufferedImage;
-import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.mathutil.randomize.ConsistentRandomizer;
-import org.encog.ml.data.MLDataSet;
-import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.layers.BasicLayer;
-import org.encog.neural.networks.training.propagation.Propagation;
-import org.encog.neural.networks.training.propagation.back.Backpropagation;
-import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import java.io.*;
+import views.ConsoleOutput;
 
 /**
  *
@@ -19,107 +15,73 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
  */
 public class ANNManager {
 
-    private double momentum = 0.3;
-    private double learnRate = 0.7;
-    private double errorRate = 0.01;
-    private DataProcessor processor;
-    private ImageProcessor imageProcessor;
-    boolean trained = false;
-    private BasicNetwork network;
-    private ImageTrainingSetLoader loader;
+    Logger logger = new Logger();
 
-    public void train(TrainMethod method) {
-        Propagation train;
-        MLDataSet trainSet = loader.getTrainingSet();
-        new ConsistentRandomizer(-1,1,500).randomize(network);
-        switch (method) {
-            case ResilentPropagation: {
-                train = new ResilientPropagation(network, trainSet);
-                break;
-            }
-            default:
-            case BackPropagation: {
-                train = new Backpropagation(network, trainSet, learnRate, momentum);
-                break;
-            }
-        }
-        int epoch = 1;
-
-        do {
-            train.iteration();
-            System.out.println("Epoch " + epoch + " Error:" + train.getError());
-            epoch++;
-        } while (train.getError() > errorRate);
+    /**
+     * Tworzy nowa siec w oparciu o podane procesory danych, sam ustala rozmiar
+     * wejsc, wyjsc, neuronow ukrytych.
+     *
+     * @param imgProcessor Procesor obrazu, jesli null to konwersja na obraz w
+     * odcieni szarosci i zmiana na double[]
+     * @param dataProcessor Procesor przetwarzajacy wstepnie dane, domyslnie PCA
+     * o rozmiarze 200
+     * @param forceNew Tworzy nowa siec i ewentualnie przelicza PCA nawet jesli
+     * siec jest zapisana i mozna ja odczytac
+     * @return Wczytana lub utworzona siec neuronowa
+     */
+    public ANN getANN(ImageProcessor imgProcessor, DataProcessor dataProcessor, boolean forceNew) {
         
-        trained = true;
+        DataLoader loader = new ImageTrainingSetLoader(imgProcessor, dataProcessor);
+        File file = new File(Config.dataPath + File.separatorChar + "ANN" + imgProcessor.getName() + dataProcessor.getName() + ".ann");
+        ANN ann = null;
+        if (file.exists()) {
+            logger.log("Loading ANN...");
+            ann=loadANN(file);
+            ann.setLogger(logger);
+            ann.setLoader(loader);
+            logger.log("Done.");
+        }
+            
+        if(ann==null){
+            logger.log("Creating new ANN...");
+            ann = new ANN(loader);
+        }
+        
+        logger.log("Done.");
+        return ann;
     }
 
-    public void getANN(int inputs, int hidden, int outputs,boolean forceNew) {
-
-        network = new BasicNetwork();
-        network.addLayer(new BasicLayer(null, true, inputs));
-        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
-        network.addLayer(new BasicLayer(new ActivationSigmoid(), false, outputs));
-        network.getStructure().finalizeStructure();
-        network.reset();
-        trained = false;
+    private ANN loadANN(File file) {
+        ANN ann;
+        try (FileInputStream fileIn = new FileInputStream(file); ObjectInputStream in = new ObjectInputStream(fileIn)) {
+            logger.log("Loading ANN Object...");
+            ann = (ANN) in.readObject();
+            return ann;
+        } catch (ClassNotFoundException | IOException e) {
+            logger.log("Can't load...");
+        }
+        return null;
     }
 
-    public int getSubjectNbr(BufferedImage img) {
-
-        throw new RuntimeException("Not supported");
+    public void saveANN(ANN ann) {
+        File file = new File(Config.dataPath + File.separatorChar + "ANN" + ann.getImageProcessor().getName() + ann.getProcessor().getName() + ".ann");
+        try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            logger.log("Saving ANN...");
+            out.writeObject(ann);
+        } catch (IOException e) {
+            logger.log("Can't save ANN");
+        }
     }
 
-    public void setImageProcessor(ImageProcessor imageProcessor) {
-        this.imageProcessor = imageProcessor;
+    public void removeConsoleOutputs() {
+        logger.removeConsoleOutputs();
     }
 
-    public DataProcessor getProcessor() {
-        return processor;
+    public void removeConsoleOutput(ConsoleOutput output) {
+        logger.removeConsoleOutput(output);
     }
 
-    public void setProcessor(DataProcessor processor) {
-        this.processor = processor;
+    public void addConsoleOutput(ConsoleOutput output) {
+        logger.addConsoleOutput(output);
     }
-
-    public ImageProcessor getImageProcessor() {
-        return imageProcessor;
-    }
-
-    public ANNManager(DataProcessor processor, ImageProcessor imageProcessor) {
-        this.processor = processor;
-        this.imageProcessor = imageProcessor;
-        loader = new ImageTrainingSetLoader(imageProcessor, processor);
-    }
-
-    public enum TrainMethod {
-
-        BackPropagation, ResilentPropagation
-    }
-
-    public double getErrorRate() {
-        return errorRate;
-    }
-
-    public void setErrorRate(double errorRate) {
-        this.errorRate = errorRate;
-    }
-
-    public double getLearnRate() {
-        return learnRate;
-    }
-
-    public void setLearnRate(double learnRate) {
-        this.learnRate = learnRate;
-    }
-
-    public double getMomentum() {
-        return momentum;
-    }
-
-    public void setMomentum(double momentum) {
-        this.momentum = momentum;
-    }
-    
-    
 }

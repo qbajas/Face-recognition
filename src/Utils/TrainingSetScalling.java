@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Utils;
 
 import java.awt.AlphaComposite;
@@ -26,7 +22,7 @@ public class TrainingSetScalling {
     private static final int WIDTH =640/6, HEIGHT=480/6;
     
     public static void main(String[] args) {
-        new TrainingSetScalling().resizeAll("dataSet");
+        new TrainingSetScalling().resizeAll(Config.dataPath);
     }
 
     public void resizeAll(String source) {
