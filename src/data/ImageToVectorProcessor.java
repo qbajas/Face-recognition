@@ -44,4 +44,9 @@ public class ImageToVectorProcessor implements ImageProcessor {
         }
         return gray;
     }
+
+    @Override
+    public String getName() {
+        return "Img2Vec" + (convert2Gray? "RGB2Gray":"None");
+    }
 }

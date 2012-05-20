@@ -25,7 +25,7 @@ public class PCA implements Serializable{
      *
      * @param input
      */
-    PCA(double[][] input) {
+    public PCA(double[][] input) {
         this(input, input.length);
     }
 
@@ -36,7 +36,7 @@ public class PCA implements Serializable{
      * @param input
      * @param c liczba skladowych glownych
      */
-    PCA(double[][] input, int c) {
+    public PCA(double[][] input, int c) {
 
         data = new DenseMatrix64F(input);
 
@@ -80,9 +80,9 @@ public class PCA implements Serializable{
 
     public double[] projection(double[] input) {
 
-        DenseMatrix64F mean2 = DenseMatrix64F.wrap(data.getNumCols(), 1, mean);
+        DenseMatrix64F mean2 = DenseMatrix64F.wrap(mean.length, 1, mean);
 
-        DenseMatrix64F inputMatrix = new DenseMatrix64F(data.getNumCols(), 1, true, input);
+        DenseMatrix64F inputMatrix = new DenseMatrix64F(mean.length, 1, true, input);
         DenseMatrix64F projection = new DenseMatrix64F(componentsCount, 1);
 
         CommonOps.sub(inputMatrix, mean2, inputMatrix);
@@ -90,4 +90,10 @@ public class PCA implements Serializable{
 
         return projection.data;
     }
+
+    public int getComponentsCount() {
+        return componentsCount;
+    }
+    
+    
 }

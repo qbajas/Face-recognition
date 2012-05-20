@@ -14,4 +14,6 @@ public interface ImageProcessor {
      * @return Wartosci pikseli po przetworzeniu obrazu
      */
     double[] process(java.awt.image.BufferedImage img);
+    
+    String getName();
 }
