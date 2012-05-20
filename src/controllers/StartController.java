@@ -13,8 +13,9 @@ import views.StartView;
 
 public class StartController {
 
-	
-	public void openFileChooser(StartView view) {
+	// handles click on 'load image' from start view	
+	// returns chosen file
+	public File openFileChooser(StartView view) {
 		FileChooser fc = new FileChooser();
 		File f = fc.LoadFile();
 		
@@ -26,6 +27,13 @@ public class StartController {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
 			e.printStackTrace();			
 		}
+		return f;
+	}
+	
+	
+	// handles click on 'find a person' from start view	
+	public void findPerson(){
+		//TODO
 	}
 
 }

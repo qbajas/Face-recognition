@@ -18,6 +18,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
+import javax.swing.BoxLayout;
+import java.awt.Component;
+import java.awt.BorderLayout;
 
 public class StartView {
 
@@ -60,6 +63,8 @@ public class StartView {
 		leftPanel.setBackground(Color.WHITE);
 		leftPanel.setBounds(39, 36, 300, 348);
 		frame.getContentPane().add(leftPanel);
+		leftPanel.setLayout(new BorderLayout(0, 0));
+		yourImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		
 		yourImageLabel.setIcon(new ImageIcon("img/anonymousAvatar.png"));
@@ -74,8 +79,10 @@ public class StartView {
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(445, 36, 300, 348);
 		frame.getContentPane().add(panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setIcon(new ImageIcon("img/anonymousAvatar.png"));
 		panel_1.add(lblNewLabel_1);
 		
@@ -86,6 +93,11 @@ public class StartView {
 		frame.getContentPane().add(lblPersonFound);
 		
 		JButton btnFindAPerson = new JButton("Find a person !");
+		btnFindAPerson.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.findPerson();
+			}
+		});
 		btnFindAPerson.setBounds(445, 395, 300, 23);
 		frame.getContentPane().add(btnFindAPerson);
 	}
