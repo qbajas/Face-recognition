@@ -1,11 +1,15 @@
 package controllers;
 
 import java.awt.EventQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import views.StartView;
+import ann.ANN;
 import ann.ANNManager;
 import data.DataProcessor;
 import data.ImageToVectorProcessor;
+import data.PCADataProcessor;
 
 public class Main {
 
@@ -17,9 +21,15 @@ public class Main {
             
             /////////////TEST/////////////////////////////////////////////////////////////
 		/*
-          ANNManager ann = new ANNManager(new DataProcessor(), new ImageToVectorProcessor(true));
-          ann.getANN(8480, 100, 40, true);
-          ann.train(ANNManager.TrainMethod.BackPropagation);
+          ANNManager annManager = new ANNManager();
+          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(200), false);
+          ann.train(ANN.TrainMethod.ResilentPropagation, true);
+        try {
+            Thread.currentThread().sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+          annManager.saveANN(ann);
           */
             ////////////////////////////////////////////////////////////////////////
             
