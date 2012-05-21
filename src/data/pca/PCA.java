@@ -13,7 +13,7 @@ import org.ejml.ops.SingularOps;
  * @author Michal
  */
 public class PCA implements Serializable{
-    private static final long serialVersionUID = 11L;
+    private static final long serialVersionUID = 12L;
     private DenseMatrix64F components;
     transient private DenseMatrix64F data = new DenseMatrix64F(1, 1); // potrzebne tylko do stworzenie skladowych, pozniej juz nie
     private double mean[];
@@ -75,7 +75,11 @@ public class PCA implements Serializable{
         components = svd.getV(true);
         DenseMatrix64F W = svd.getW(null);
         SingularOps.descendingOrder(null, false, W, components, true);
+        System.out.println("L1= "+components.data.length);
         components.reshape(componentsCount, mean.length, true);
+        DenseMatrix64F m = new DenseMatrix64F(components);
+        components = m;
+        System.out.println("L2= "+components.data.length);
     }
 
     public double[] projection(double[] input) {

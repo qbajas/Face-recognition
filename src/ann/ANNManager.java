@@ -37,15 +37,15 @@ public class ANNManager {
         if (file.exists()) {
             logger.log("Loading ANN...");
             ann=loadANN(file);
-            ann.setLogger(logger);
-            ann.setLoader(loader);
-            logger.log("Done.");
         }
             
         if(ann==null){
             logger.log("Creating new ANN...");
             ann = new ANN(loader);
         }
+        
+        ann.setLogger(logger);
+        ann.setLoader(loader);
         
         logger.log("Done.");
         return ann;
