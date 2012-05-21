@@ -23,6 +23,7 @@ public class StartController {
 		try {
 			myPicture = ImageIO.read(f);
 			view.yourImageLabel.setIcon(new ImageIcon(myPicture));
+			System.out.println("Image loaded.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
 			e.printStackTrace();			

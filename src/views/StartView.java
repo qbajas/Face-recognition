@@ -1,5 +1,6 @@
 package views;
 
+import Utils.MessageConsole;
 import ann.ANNManager;
 import data.DataProcessor;
 import data.ImageToVectorProcessor;
@@ -11,6 +12,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.encog.ml.data.MLDataSet;
 
 import controllers.StartController;
@@ -21,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.BoxLayout;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import javax.swing.JTextArea;
 
 public class StartView {
 
@@ -100,5 +104,25 @@ public class StartView {
 		});
 		btnFindAPerson.setBounds(445, 395, 300, 23);
 		frame.getContentPane().add(btnFindAPerson);
+		
+		JButton btnAdvancedSettings = new JButton("Advanced settings");
+		btnAdvancedSettings.setBounds(39, 528, 706, 23);
+		frame.getContentPane().add(btnAdvancedSettings);
+		
+		JTextArea textArea = new JTextArea();
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		scrollPane.setBounds(39, 429, 706, 88);
+		frame.getContentPane().add(scrollPane);
+		activateConsole(scrollPane, textArea);
+		
+	}
+	
+	
+	private void activateConsole(JScrollPane scrollPane, JTextArea textArea){
+		frame.getContentPane().add( scrollPane );
+		MessageConsole mc = new MessageConsole(textArea);
+		mc.redirectOut();
+		mc.redirectErr(Color.RED, null);
+		//mc.setMessageLines(100);
 	}
 }
