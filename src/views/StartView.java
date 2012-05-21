@@ -106,6 +106,11 @@ public class StartView {
 		frame.getContentPane().add(btnFindAPerson);
 		
 		JButton btnAdvancedSettings = new JButton("Advanced settings");
+		btnAdvancedSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.openAdvancedSettings(view);
+			}
+		});
 		btnAdvancedSettings.setBounds(39, 528, 706, 23);
 		frame.getContentPane().add(btnAdvancedSettings);
 		
@@ -113,16 +118,10 @@ public class StartView {
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setBounds(39, 429, 706, 88);
 		frame.getContentPane().add(scrollPane);
-		activateConsole(scrollPane, textArea);
+		MessageConsole.activateConsole(scrollPane, textArea);
 		
 	}
 	
 	
-	private void activateConsole(JScrollPane scrollPane, JTextArea textArea){
-		frame.getContentPane().add( scrollPane );
-		MessageConsole mc = new MessageConsole(textArea);
-		mc.redirectOut();
-		mc.redirectErr(Color.RED, null);
-		//mc.setMessageLines(100);
-	}
+
 }

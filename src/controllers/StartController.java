@@ -1,6 +1,7 @@
 package controllers;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import views.AdvancedView;
 import views.FileChooser;
 import views.StartView;
 
@@ -35,6 +37,21 @@ public class StartController {
 	// handles click on 'find a person' from start view	
 	public void findPerson(){
 		//TODO
+	}
+
+
+	public void openAdvancedSettings(StartView view) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					AdvancedView frame = new AdvancedView();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
 	}
 
 }

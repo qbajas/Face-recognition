@@ -26,6 +26,16 @@ public class MessageConsole
 	private Document document;
 	private boolean isAppend;
 	private DocumentListener limitLinesListener;
+	
+	/*
+	 *  Activate console
+	 */
+	public static void activateConsole(JScrollPane scrollPane, JTextArea textArea){
+		MessageConsole mc = new MessageConsole(textArea);
+		mc.redirectOut();
+		mc.redirectErr(Color.RED, null);
+		//mc.setMessageLines(100);
+	}
 
 	public MessageConsole(JTextComponent textComponent)
 	{
