@@ -30,12 +30,7 @@ public class AdvancedView extends JFrame {
 		btnTrain.setBounds(10, 170, 764, 23);
 		contentPane.add(btnTrain);
 		
-		JTextArea textArea = new JTextArea();
-		JScrollPane scrollPane = new JScrollPane(textArea);
-		scrollPane.setBounds(39, 429, 706, 88);
-		getContentPane().add(scrollPane);
-		MessageConsole.activateConsole(scrollPane, textArea);
-		
+
 	}
 
 }

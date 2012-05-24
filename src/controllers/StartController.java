@@ -15,12 +15,12 @@ import views.StartView;
 
 public class StartController {
 
-	// handles click on 'load image' from start view	
+	// handles click on 'load image' from start view
 	// returns chosen file
 	public File openFileChooser(StartView view) {
 		FileChooser fc = new FileChooser();
 		File f = fc.LoadFile();
-		
+
 		BufferedImage myPicture;
 		try {
 			myPicture = ImageIO.read(f);
@@ -28,30 +28,21 @@ public class StartController {
 			System.out.println("Image loaded.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 		return f;
 	}
-	
-	
-	// handles click on 'find a person' from start view	
-	public void findPerson(){
-		//TODO
+
+	// handles click on 'find a person' from start view
+	public void findPerson() {
+		// TODO
 	}
 
-
 	public void openAdvancedSettings(StartView view) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AdvancedView frame = new AdvancedView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
+
+		AdvancedView frame = new AdvancedView();
+		frame.setVisible(true);
+
 	}
 
 }
