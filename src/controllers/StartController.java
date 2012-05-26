@@ -23,6 +23,7 @@ import views.StartView;
 public class StartController {
 	
 	private ANN ann;
+	private BufferedImage loadedPicture;
 
 	// handles click on 'load image' from start view
 	// returns chosen file
@@ -30,11 +31,10 @@ public class StartController {
 		FileChooser fc = new FileChooser();
 		File f = fc.LoadFile();
 
-		BufferedImage myPicture;
 		try {
-			myPicture = ImageIO.read(f);
-			view.yourImageLabel.setIcon(new ImageIcon(myPicture));
-			System.out.println("Image loaded.");
+			loadedPicture = ImageIO.read(f);
+			view.yourImageLabel.setIcon(new ImageIcon(loadedPicture));
+			System.out.println("Image " +f.getName()+ " loaded.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
 			e.printStackTrace();
@@ -43,15 +43,18 @@ public class StartController {
 	}
 
 	// handles click on 'find a person' from start view
-	public void findPerson(Icon icon) {
+	public void findPerson() {
 
-		BufferedImage img = new BufferedImage(icon.getIconWidth(),
-				icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+		if (loadedPicture==null)
+		{
+			System.out.println("Please load a picture first !");
+			return;
+		}
 
 		if (ann == null)
-			ann = createANN(100);
+			ann = createANN(100, false);
 		
-		int index = ann.getSubjectNbr(img);
+		int index = ann.getSubjectNbr(loadedPicture);
 		System.out.println("Recognized image number " + index);
 	}
 
@@ -64,7 +67,7 @@ public class StartController {
 
 	public void train(int pcaSize, ANN.TrainMethod trainMethod) {
 		if (ann == null)
-			ann = createANN(pcaSize);
+			ann = createANN(pcaSize,true);
 		
 		ANNManager manager = new ANNManager();
 		//train
@@ -73,11 +76,11 @@ public class StartController {
 	}
 	
 	
-	private ANN createANN(int pcaSize){
+	private ANN createANN(int pcaSize, boolean forceNew){
 		ANNManager manager = new ANNManager();
 		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
-		ANN network = manager.getANN(imageProcessor, dataProcessor, false);
+		ANN network = manager.getANN(imageProcessor, dataProcessor, forceNew);
 		return network;
 	}
 
