@@ -25,6 +25,8 @@ import javax.swing.BoxLayout;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 public class StartView {
 
@@ -43,6 +45,7 @@ public class StartView {
 	
 	public JPanel leftPanel = new JPanel();
 	public JLabel yourImageLabel = new JLabel("");
+	private JTextField textField;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -99,20 +102,11 @@ public class StartView {
 		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.findPerson();
+				controller.findPerson(yourImageLabel.getIcon());
 			}
 		});
 		btnFindAPerson.setBounds(445, 395, 300, 23);
 		frame.getContentPane().add(btnFindAPerson);
-		
-		JButton btnAdvancedSettings = new JButton("Advanced settings");
-		btnAdvancedSettings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				controller.openAdvancedSettings(view);
-			}
-		});
-		btnAdvancedSettings.setBounds(39, 528, 706, 23);
-		frame.getContentPane().add(btnAdvancedSettings);
 		
 		JTextArea textArea = new JTextArea();
 		JScrollPane scrollPane = new JScrollPane(textArea);
@@ -120,8 +114,31 @@ public class StartView {
 		frame.getContentPane().add(scrollPane);
 		MessageConsole.activateConsole(scrollPane, textArea);
 		
+		JButton btnTrainNetwork = new JButton("Train network");
+		btnTrainNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.train();
+			}
+		});
+		btnTrainNetwork.setBounds(445, 528, 300, 23);
+		frame.getContentPane().add(btnTrainNetwork);
+		
+		JLabel lblTrainingMethod = new JLabel("Training method");
+		lblTrainingMethod.setBounds(39, 528, 110, 14);
+		frame.getContentPane().add(lblTrainingMethod);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(144, 528, 28, 20);
+		frame.getContentPane().add(comboBox);
+		
+		JLabel lblPcaSize = new JLabel("PCA size");
+		lblPcaSize.setBounds(217, 528, 46, 14);
+		frame.getContentPane().add(lblPcaSize);
+		
+		textField = new JTextField();
+		textField.setBounds(275, 528, 86, 20);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+		
 	}
-	
-	
-
 }
