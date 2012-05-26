@@ -7,6 +7,7 @@ import data.DataProcessor;
 import data.ImageProcessor;
 import data.ImageTrainingSetLoader;
 import java.io.*;
+import java.util.LinkedList;
 import views.ConsoleOutput;
 
 /**
@@ -34,7 +35,7 @@ public class ANNManager {
         DataLoader loader = new ImageTrainingSetLoader(imgProcessor, dataProcessor);
         File file = new File(Config.dataPath + File.separatorChar + "ANN" + imgProcessor.getName() + dataProcessor.getName() + ".ann");
         ANN ann = null;
-        if (file.exists()) {
+        if (!forceNew && file.exists()) {
             logger.log("Loading ANN...");
             ann=loadANN(file);
         }
@@ -46,6 +47,8 @@ public class ANNManager {
         
         ann.setLogger(logger);
         ann.setLoader(loader);
+        loader.loadData(Config.dataPath, Config.falseDataPath);
+        ann.setListeners(new LinkedList<TrainingListener>());
         
         logger.log("Done.");
         return ann;

@@ -4,35 +4,40 @@ import Utils.Config;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
+import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataPair;
 import org.encog.ml.data.basic.BasicMLDataSet;
 
 /**
- * Klasa do wczytywania wszystkich zdjec twarzy z katalogu bazy obrazow, pogrupowanych
- * w foldery odpowiadajace poszczegolnym osobom
+ * Klasa do wczytywania wszystkich zdjec twarzy z katalogu bazy obrazow,
+ * pogrupowanych w foldery odpowiadajace poszczegolnym osobom
+ *
  * @author Michal
  */
-public class ImageTrainingSetLoader implements DataLoader{
-    
+public class ImageTrainingSetLoader implements DataLoader {
+
     private MLDataSet trainingSet;
     private MLDataSet testSet;
     private MLDataSet generalizationSet;
+    private MLDataSet falseSet;
     private boolean loaded = false;
-    
-    private static String[] imagesPath ={
-       "_0.Jpg", "_+05.Jpg", "_+25.Jpg", "_+45.Jpg",  "_+75.Jpg", "_-05.Jpg", 
-       "_-25.Jpg", "_-45.Jpg", "_-75.Jpg",  "_+5.Jpg","_-5.Jpg"
+    private static String[] imagesPath = {
+        "_0.jpg", "_+05.jpg","_+15.jpg", "_+25.jpg", "_+45.jpg", "_+75.jpg", "_-05.jpg",
+        "_-15.jpg", "_-25.jpg", "_-45.jpg", "_-75.jpg", "_+5.jpg", "_-5.jpg"
     };
-    
     private ImageProcessor imgProcessor;
     private DataProcessor dataProcessor;
-    
+
     /**
      * Umożliwia ustawienie dodatkowych
+     *
      * @param imgProcessor
-     * @param dataProcessor 
+     * @param dataProcessor
      */
     public ImageTrainingSetLoader(ImageProcessor imgProcessor, DataProcessor dataProcessor) {
         this.imgProcessor = imgProcessor;
@@ -47,9 +52,9 @@ public class ImageTrainingSetLoader implements DataLoader{
         imgProcessor = new ImageToVectorProcessor(true);
         dataProcessor = new DataProcessor();
     }
-    
+
     @Override
-    public void loadData(String source) {
+    public void loadData(String source, String falseSource) {
         File mainFolder = new File(source);
         File subFolders[] = mainFolder.listFiles(new FileFilter() {
             @Override
@@ -57,71 +62,175 @@ public class ImageTrainingSetLoader implements DataLoader{
                 return pathname.isDirectory();
             }
         });
-        
-        LinkedList<double[]> inputs = new LinkedList<>();
-        LinkedList<double[]> outputs = new LinkedList<>();
-        
+
         FileFilter jpgFilter = new FileFilter() {
             @Override
             public boolean accept(File pathname) {
+                return pathname.getName().toLowerCase().endsWith(".jpg");
+            }
+        };
+
+        FileFilter testFilter = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
                 String name = pathname.getName();
-                for(String s:imagesPath){
-                    if(name.toLowerCase().startsWith("a") && name.toLowerCase().endsWith(s.toLowerCase())){
+                for (String s : imagesPath) {
+                    if (name.toLowerCase().startsWith("a") && name.toLowerCase().endsWith(s.toLowerCase())) {
                         return true;
                     }
                 }
                 return false;
             }
         };
-        
+
         File images[];
         int subjectNbr;
         int subjectsCount = subFolders.length;
+        OutputContainer container = new OutputContainer(subjectsCount);
+
+        LinkedList<MLDataPair> trainPairs = new LinkedList<>();
+        LinkedList<MLDataPair> pairs = new LinkedList<>();
         
-        for(File folder:subFolders){
-            subjectNbr = Integer.parseInt( folder.getName().replace("Subject", "") );
+        System.out.println("Loading...");
+        for (File folder : subFolders) {
+            subjectNbr = Integer.parseInt(folder.getName().replace("Subject", ""));
             System.out.println(folder.getName());
             images = folder.listFiles(jpgFilter);
 
-            double output[] = new double[subjectsCount];
-            output[subjectNbr-1] = 1.0;
-            
-            for(File image:images){
-                
-                outputs.add(output);
+            for (File image : images) {
                 try {
-                    inputs.add(imgProcessor.process(ImageIO.read(image)));
+                    if (testFilter.accept(image)) {
+                        trainPairs.add(getPair(imgProcessor.process(ImageIO.read(image)), container.getIdealOutput(subjectNbr)));
+                    } else {
+                        pairs.add(getPair(imgProcessor.process(ImageIO.read(image)), container.getIdealOutput(subjectNbr)));
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex.getMessage());
                 }
             }
         }
-        
-        if(inputs.size()!=outputs.size())
-            throw new RuntimeException("inputs!=outputs");
-        
-        double [][] annInputs = new double[inputs.size()][];
-        double [][] annOutputs = new double[outputs.size()][];
-        
-        inputs.toArray(annInputs);
-        outputs.toArray(annOutputs);
-        
+        subFolders = null;
+        double[][] annInputs = new double[trainPairs.size()][];
+        double[][] annOutputs = new double[trainPairs.size()][];
+
+        int counter = 0;
+        for (MLDataPair pair : trainPairs) {
+            annInputs[counter] = pair.getInputArray();
+            annOutputs[counter] = pair.getIdealArray();
+            ++counter;
+        }
         annInputs = dataProcessor.processData(annInputs);
+        trainingSet = new BasicMLDataSet(annInputs, annOutputs);
         
-       trainingSet = new BasicMLDataSet(annInputs, annOutputs);   
-       loaded=true;
+        annInputs= null;
+        annOutputs = null;
+        
+        System.out.println("Training set size = " +trainingSet.size());
+        Collections.shuffle(pairs);
+        counter = (int) (pairs.size() *0.3); //30% pozostalych danych zbior generalizacyjny
+        
+        generalizationSet = new BasicMLDataSet();
+        testSet = new BasicMLDataSet();
+        falseSet = new BasicMLDataSet();
+        
+        int i=-1;
+        for(MLDataPair pair:pairs){
+            if(++i<counter)
+                generalizationSet.add(getPair(dataProcessor.getProjection(pair.getInputArray()), pair.getIdealArray()));
+            else
+                testSet.add(getPair(dataProcessor.getProjection(pair.getInputArray()), pair.getIdealArray()));
+        }
+        pairs = null;
+        System.out.println("Generalization set size = " +generalizationSet.size());
+        System.out.println("Test set size = " +testSet.size());
+        
+        mainFolder = new File(falseSource);
+        subFolders = mainFolder.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+        
+        for (File folder : subFolders) {
+            System.out.println(folder.getName());
+            images = folder.listFiles(jpgFilter);
+            for (File image : images) {
+                try {
+                        falseSet.add(getPair(dataProcessor.getProjection(imgProcessor.process(ImageIO.read(image))), container.getIdealOutput(0)));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex.getMessage());
+                }
+            }
+        }
+        System.out.println("False positive test set size = "+falseSet.size());
+        loaded = true;
+    }
+
+    private MLDataPair getPair(double[] input, double[] output) {
+        return new BasicMLDataPair(new BasicMLData(input), new BasicMLData(output));
     }
     
+
+
+    @Override
+    public MLDataSet getTrainingSet() {
+        if (trainingSet == null) {
+            loadData(Config.dataPath, Config.falseDataPath);
+        }
+        return trainingSet;
+    }
+
+    @Override
+    public MLDataSet getGeneralizationSet() {
+        if (generalizationSet == null) {
+            loadData(Config.dataPath, Config.falseDataPath);
+        }
+        return generalizationSet;
+    }
+
+    @Override
+    public MLDataSet getTestSet() {
+        if (testSet == null) {
+            loadData(Config.dataPath, Config.falseDataPath);
+        }
+        return testSet;
+    }
+
+    @Override
+    public MLDataSet getFalseSet() {
+        return falseSet;
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    /**
+     * Zwraca dlugosc pojedynczej probki
+     *
+     * @return
+     */
+    @Override
+    public int getInputLength(String path) {
+        try {
+            return dataProcessor.getProjection(imgProcessor.process(ImageIO.read(new File(path)))).length;
+        } catch (IOException ex) {
+        }
+        return -1;
+    }
+
     @Override
     public void setDataProcessor(DataProcessor processor) {
         dataProcessor = processor;
     }
-    
+
     @Override
     public DataProcessor getDataProcessor() {
         return dataProcessor;
     }
-    
+
     @Override
     public void setImageProcessor(ImageProcessor processor) {
         imgProcessor = processor;
@@ -130,42 +239,5 @@ public class ImageTrainingSetLoader implements DataLoader{
     @Override
     public ImageProcessor getImageProcessor() {
         return imgProcessor;
-    }
-
-    @Override
-    public void ShuffleData() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public MLDataSet getTrainingSet() {
-        return trainingSet;
-    }
-
-    @Override
-    public MLDataSet getGeneralizationSet() {
-        return generalizationSet;
-    }
-
-    @Override
-    public MLDataSet getTestSet() {
-        return testSet;
-    }
-
-    @Override
-    public boolean isLoaded() {
-        return loaded;
-    }
-    
-    /**
-     * Zwraca dlugosc pojedynczej probki
-     * @return 
-     */
-    @Override
-    public int getInputLength(String path){
-        try {
-            return dataProcessor.getProjection(imgProcessor.process(ImageIO.read(new File(path)))).length;
-        } catch (IOException ex) {}
-        return -1;
     }
 }
