@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.encog.ml.data.MLDataSet;
 
@@ -25,6 +26,14 @@ import javax.swing.BoxLayout;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.DefaultComboBoxModel;
+import ann.ANN.TrainMethod;
+import java.awt.Font;
+import javax.swing.UIManager;
+import java.awt.SystemColor;
+import javax.swing.border.LineBorder;
 
 public class StartView {
 
@@ -43,13 +52,15 @@ public class StartView {
 	
 	public JPanel leftPanel = new JPanel();
 	public JLabel yourImageLabel = new JLabel("");
+	private JTextField textField;
 	
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame("Neural Network Face Recognition System");
-		frame.setBounds(100, 100, 800, 600);
+		frame.setBounds(100, 100, 800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -60,12 +71,12 @@ public class StartView {
 				controller.openFileChooser(view);
 			}
 		});
-		btnLoadAnImage.setBounds(39, 395, 300, 23);
+		btnLoadAnImage.setBounds(39, 347, 300, 23);
 		frame.getContentPane().add(btnLoadAnImage);
 		
 		
 		leftPanel.setBackground(Color.WHITE);
-		leftPanel.setBounds(39, 36, 300, 348);
+		leftPanel.setBounds(39, 36, 300, 300);
 		frame.getContentPane().add(leftPanel);
 		leftPanel.setLayout(new BorderLayout(0, 0));
 		yourImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -81,7 +92,7 @@ public class StartView {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(445, 36, 300, 348);
+		panel_1.setBounds(445, 36, 300, 300);
 		frame.getContentPane().add(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
@@ -99,29 +110,57 @@ public class StartView {
 		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.findPerson();
+				controller.findPerson(yourImageLabel.getIcon());
 			}
 		});
-		btnFindAPerson.setBounds(445, 395, 300, 23);
+		btnFindAPerson.setBounds(445, 347, 300, 23);
 		frame.getContentPane().add(btnFindAPerson);
-		
-		JButton btnAdvancedSettings = new JButton("Advanced settings");
-		btnAdvancedSettings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				controller.openAdvancedSettings(view);
-			}
-		});
-		btnAdvancedSettings.setBounds(39, 528, 706, 23);
-		frame.getContentPane().add(btnAdvancedSettings);
 		
 		JTextArea textArea = new JTextArea();
 		JScrollPane scrollPane = new JScrollPane(textArea);
-		scrollPane.setBounds(39, 429, 706, 88);
+		scrollPane.setBounds(10, 499, 764, 152);
 		frame.getContentPane().add(scrollPane);
 		MessageConsole.activateConsole(scrollPane, textArea);
 		
+		JLabel lblOutput = new JLabel("Output");
+		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
+		lblOutput.setBackground(new Color(255, 248, 220));
+		scrollPane.setColumnHeaderView(lblOutput);
+		
+	
+		JLabel lblTrainingMethod = new JLabel("Training method");
+		lblTrainingMethod.setBounds(39, 428, 110, 14);
+		frame.getContentPane().add(lblTrainingMethod);
+		
+		final JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(TrainMethod.values()));
+		comboBox.setBounds(39, 447, 203, 20);
+		frame.getContentPane().add(comboBox);
+		
+		JLabel lblPcaSize = new JLabel("PCA size (50-200)");
+		lblPcaSize.setBounds(278, 428, 145, 14);
+		frame.getContentPane().add(lblPcaSize);
+		
+		textField = new JTextField();
+		textField.setText("100");
+		textField.setBounds(278, 447, 48, 20);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+		
+		JButton btnTrainNetwork = new JButton("Train network");
+		btnTrainNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.train(Integer.parseInt(textField.getText()), (TrainMethod) comboBox.getSelectedItem());
+			}
+		});
+		btnTrainNetwork.setBounds(445, 446, 300, 23);
+		frame.getContentPane().add(btnTrainNetwork);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(128, 128, 128)));
+		panel.setBackground(new Color(255, 248, 220));
+		panel.setBounds(-15, 410, 814, 78);
+		frame.getContentPane().add(panel);
+		
 	}
-	
-	
-
 }

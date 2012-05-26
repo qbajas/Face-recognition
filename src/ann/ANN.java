@@ -108,6 +108,8 @@ public class ANN implements Serializable{
                     
                     epoch++;
                     
+                    notifyUpdated(error, trainAcc, genAcc);                    
+                    
                 } while ( (getAccuracy(trainSet) < minAccuracy || getAccuracy(generalizationSet) <minAccuracy)  && epoch<maxIt);
 
                 trained = true;
@@ -294,6 +296,11 @@ public class ANN implements Serializable{
     private void notifyFinished(){
         for(TrainingListener listener:listeners)
             listener.trainingFinished();
+    }
+    
+    private void notifyUpdated(double errorRate, double trainingAccuracy, double generalizationAccuracy){
+        for(TrainingListener listener:listeners)
+            listener.trainingUpdate(errorRate, trainingAccuracy, generalizationAccuracy);
     }
     
 
