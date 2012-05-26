@@ -27,8 +27,8 @@ public class ImageTrainingSetLoader implements DataLoader {
     private MLDataSet falseSet;
     private boolean loaded = false;
     private static String[] imagesPath = {
-        "_0.jpg", "_+05.jpg","_+15.jpg", "_+25.jpg", "_+45.jpg", "_+75.jpg", "_-05.jpg",
-        "_-15.jpg", "_-25.jpg", "_-45.jpg", "_-75.jpg", "_+5.jpg", "_-5.jpg"
+        "_0.jpg", "_+05.jpg","_+10.jpg","_+15.jpg", "_+25.jpg", "_+45.jpg","_+65.jpg", "_+75.jpg","_+90.jpg",
+        "_-05.jpg","_-10.jpg","_-15.jpg", "_-25.jpg", "_-45.jpg","_-65.jpg", "_-75.jpg","_-90.jpg", "_+5.jpg", "_-5.jpg"
     };
     private ImageProcessor imgProcessor;
     private DataProcessor dataProcessor;
