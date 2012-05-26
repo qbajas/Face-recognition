@@ -21,6 +21,8 @@ import views.FileChooser;
 import views.StartView;
 
 public class StartController {
+	
+	private ANN ann;
 
 	// handles click on 'load image' from start view
 	// returns chosen file
@@ -46,12 +48,10 @@ public class StartController {
 		BufferedImage img = new BufferedImage(icon.getIconWidth(),
 				icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
 
-		ANNManager manager = new ANNManager();
-		DataProcessor dataProcessor = new PCADataProcessor(100); // TODO change
-		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
-		ANN network = manager.getANN(imageProcessor, dataProcessor, false);
+		if (ann == null)
+			ann = createANN(100);
 		
-		int index = network.getSubjectNbr(img);
+		int index = ann.getSubjectNbr(img);
 		System.out.println("Recognized image number " + index);
 	}
 
@@ -63,14 +63,22 @@ public class StartController {
 	}
 
 	public void train(int pcaSize, ANN.TrainMethod trainMethod) {
+		if (ann == null)
+			ann = createANN(pcaSize);
+		
+		ANNManager manager = new ANNManager();
+		//train
+		ann.train(trainMethod, true);
+		manager.saveANN(ann);				
+	}
+	
+	
+	private ANN createANN(int pcaSize){
 		ANNManager manager = new ANNManager();
 		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
 		ANN network = manager.getANN(imageProcessor, dataProcessor, false);
-		
-		//train
-		network.train(trainMethod, true);
-		manager.saveANN(network);				
+		return network;
 	}
 
 }
