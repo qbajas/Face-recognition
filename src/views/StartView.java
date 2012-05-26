@@ -32,6 +32,7 @@ import ann.ANN.TrainMethod;
 import java.awt.Font;
 import javax.swing.UIManager;
 import java.awt.SystemColor;
+import javax.swing.border.LineBorder;
 
 public class StartView {
 
@@ -115,7 +116,7 @@ public class StartView {
 		
 		JTextArea textArea = new JTextArea();
 		JScrollPane scrollPane = new JScrollPane(textArea);
-		scrollPane.setBounds(39, 515, 706, 136);
+		scrollPane.setBounds(10, 499, 764, 152);
 		frame.getContentPane().add(scrollPane);
 		MessageConsole.activateConsole(scrollPane, textArea);
 		
@@ -154,8 +155,9 @@ public class StartView {
 		frame.getContentPane().add(btnTrainNetwork);
 		
 		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(128, 128, 128)));
 		panel.setBackground(new Color(255, 248, 220));
-		panel.setBounds(0, 410, 784, 78);
+		panel.setBounds(-15, 410, 814, 78);
 		frame.getContentPane().add(panel);
 		
 	}
