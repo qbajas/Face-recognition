@@ -37,31 +37,30 @@ public class StartController {
 			System.out.println("Image " +f.getName()+ " loaded.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
-			e.printStackTrace();
 		}
 		return f;
 	}
 
 	// handles click on 'find a person' from start view
 	public void findPerson() {
-
+		// picture was not loaded, cant find it
 		if (loadedPicture==null)
 		{
 			System.out.println("Please load a picture first !");
 			return;
 		}
 
-                new Thread(new Runnable() {
+		//network was not trained, cant use it
+		if (ann == null)
+		{
+			System.out.println("You have to train the network first !");
+			return;
+		}
 
-            @Override
-            public void run() {
-                if (ann == null)
-			ann = createANN(100, false);
-		
 		int index = ann.getSubjectNbr(loadedPicture);
 		System.out.println("Recognized image number " + index);
-            }
-        }).start();
+            
+
 
 	}
 
@@ -74,7 +73,7 @@ public class StartController {
 
 	public void train(int pcaSize,final ANN.TrainMethod trainMethod) {
 		if (ann == null)
-			ann = createANN(pcaSize,true);
+			ann = createANN(pcaSize,false); //dont create a new ann if already exists
 		
 		final ANNManager manager = new ANNManager();
 		//train
@@ -87,6 +86,7 @@ public class StartController {
             }
         }).start();
 					
+
 	}
 	
 	
