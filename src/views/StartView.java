@@ -110,7 +110,7 @@ public class StartView {
 		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.findPerson(yourImageLabel.getIcon());
+				controller.findPerson();
 			}
 		});
 		btnFindAPerson.setBounds(445, 347, 300, 23);
@@ -134,6 +134,7 @@ public class StartView {
 		
 		final JComboBox comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(TrainMethod.values()));
+		comboBox.setSelectedIndex(1);
 		comboBox.setBounds(39, 447, 203, 20);
 		frame.getContentPane().add(comboBox);
 		
