@@ -1,9 +1,6 @@
 package Utils;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
@@ -26,7 +23,8 @@ import javax.media.jai.operator.MedianFilterDescriptor;
  * @author Michal
  */
 public class TrainingSetScalling {
-    private static final int WIDTH =640, HEIGHT=480;
+    private static final int margin=15;
+    private static final int WIDTH =(640-2*margin)/4, HEIGHT=(480-2*margin)/4;
     
     public static void main(String[] args) {
         new TrainingSetScalling().resizeAll(Config.dataPath);
@@ -56,7 +54,7 @@ public class TrainingSetScalling {
         };
 
         File images[];
-        BufferedImage output = null;
+        BufferedImage padded = null;
         Graphics2D g = null;
 
         Iterator iter = ImageIO.getImageWritersByFormatName("jpeg");
@@ -76,30 +74,28 @@ public class TrainingSetScalling {
                 System.out.println("Resizing " + image.getName());
                 try {
                     BufferedImage img = ImageIO.read(image); 
-                    output = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
-                    
-                    
-                    
+
                     RenderedOp op = MedianFilterDescriptor.create(img, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
                     op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
-                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
-                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
-                    RenderedOp op2 = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 7, null);
-                    op2 = MedianFilterDescriptor.create(op2, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 7, null);
+                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
+                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
+                 //   RenderedOp op2 = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 12, null);
+//                    op2 = MedianFilterDescriptor.create(op2, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 7, null);
+//                    
+//                    
+//                    float[] kernelMatrix = {    -1, -2, -1,
+//                                                -2, 12, -2,
+//                                                -1, -2, -1 };
+//                    KernelJAI kernel = new KernelJAI(3,3,kernelMatrix);
+//                    PlanarImage convolved = JAI.create("convolve", op2, kernel);
+//                   
+//                    PlanarImage binarized = BinarizeDescriptor.create(convolved, 120.0, null);
                     
                     
-                    float[] kernelMatrix = { -2, -4, -2,
-                                                -4, 24, -4,
-                                                -2, -4, -2 };
-                    KernelJAI kernel = new KernelJAI(3,3,kernelMatrix);
-                    PlanarImage convolved = JAI.create("convolve", op2, kernel);
-                    
-                    PlanarImage binarized = BinarizeDescriptor.create(convolved, 120.0, null);
-                    
-                    
-                    Rectangle  rect = getFaceBounds(binarized.getAsBufferedImage());
+                 //   Rectangle  rect = getFaceBounds(binarized.getAsBufferedImage());
                    // processed = JAI.create("convolve", processed, kernel);
-                    g = output.createGraphics();
+                    padded = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+                    g = padded.createGraphics();
                     
                     
                     g.setComposite(AlphaComposite.Src);
@@ -108,13 +104,22 @@ public class TrainingSetScalling {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
                     g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                 //   int w = (480-rect.width)/2;
+                 //   g.setColor(new Color(153,153,153));
                     
-                    g.drawImage(binarized.getAsBufferedImage().getSubimage(rect.x, rect.y, rect.width, rect.height), 0, 0, rect.width, rect.height, null);
+                 //   BufferedImage pad= op.getAsBufferedImage().getSubimage(rect.x, rect.y, rect.width, rect.height);
+                //    g.fillRect(0,0,pad.getWidth()+2*w,padded.getHeight());
+
+               //     g.drawImage(pad,w,padded.getHeight()-pad.getHeight(),null);
+                    
+                    
+                    BufferedImage copy = op.getAsBufferedImage().getSubimage(margin,margin,op.getWidth()-margin*2,op.getHeight()-margin*2);
+                    g.drawImage(copy, 0, 0, WIDTH,HEIGHT,null);
                     g.dispose();
 
                     outStream = new FileImageOutputStream(image);
                     writer.setOutput(outStream);
-                    IIOImage outImg = new IIOImage(output, null, null);
+                    IIOImage outImg = new IIOImage(padded, null, null);
                     writer.write(null, outImg, iwp);
                     outStream.close();
                     writer.reset();
@@ -126,23 +131,23 @@ public class TrainingSetScalling {
 
         }
     }
-    
+
     private Rectangle getFaceBounds(BufferedImage img){
         Rectangle rect = new Rectangle();
         int wMargin = 10;
         int hMargin = 10;
         
-        int tmpW = img.getWidth()-2*wMargin;
-        int tmpH = img.getHeight()-hMargin*2;
-        double pixels[]= new double[tmpW*tmpH] ;
+        int tmpW = img.getWidth()-wMargin;
+        int tmpH = img.getHeight()-hMargin;
+        double pixels[]= new double[img.getWidth()*img.getHeight()] ;
         
-        img.getRaster().getPixels(wMargin, hMargin, tmpW, tmpH, pixels);
+        img.getRaster().getPixels(0, 0, img.getWidth(), img.getHeight(), pixels);
         
         int minX =tmpW,  maxX= 0;
         
-        for(int col = 0; col<tmpW; ++col)
-            for(int row=0;row<tmpH;++row){
-                if(pixels[col + row*tmpW]==1){
+        for(int col = wMargin; col<tmpW; ++col)
+            for(int row=hMargin;row<tmpH;++row){
+                if(pixels[col + row*img.getWidth()]==1){
                     if(minX>col)
                         minX=col;
                     if(maxX<col)
@@ -150,10 +155,12 @@ public class TrainingSetScalling {
                 }
                     
             }
-        rect.x = minX +wMargin;
-        rect.width = maxX;
+        rect.x = minX;
+        rect.width = maxX - minX ;
+        System.out.println(rect.width);
+        
         rect.y =  hMargin;
-        rect.height = tmpH;
+        rect.height = tmpH-hMargin;
         
         return rect;
     }

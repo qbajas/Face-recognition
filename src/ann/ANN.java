@@ -30,7 +30,7 @@ public class ANN implements Serializable{
     private double momentum = 0.3;
     private double learnRate = 0.7;
     private double errorRate = 0.01;
-    private int maxIt = 1000;
+    private int maxIt = 10;
     private double minAccuracy = 1;
     
     private double threshold = 0.8;
@@ -133,7 +133,7 @@ public class ANN implements Serializable{
 
     public int getSubjectNbr(BufferedImage img) {
         double[] input = processor.getProjection(imageProcessor.process(img));
-        return network.classify(new BasicMLData(input));
+        return getSubject(input);
     }
 
     public void setImageProcessor(ImageProcessor imageProcessor) {
@@ -184,8 +184,11 @@ public class ANN implements Serializable{
             output = new double[pair.getIdealArray().length];
             network.compute(pair.getInputArray(), output);
             //if(compare(pair.getIdealArray(),output,threshold))
-            if(getSubject(pair.getIdealArray()) == getSubject(output))
-                counter++;    
+            if(getSubject(pair.getIdealArray()) == getSubject(output)){
+                counter++;  
+                System.out.println(getSubject(output));
+            }
+                  
         }
         
         return (double)counter/set.getRecordCount();

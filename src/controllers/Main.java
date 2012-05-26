@@ -20,7 +20,7 @@ public class Main {
             /////////////TEST/////////////////////////////////////////////////////////////
 		
           ANNManager annManager = new ANNManager();
-          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(300), true);
+          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(200), true);
           ann.train(ANN.TrainMethod.ResilentPropagation, true);
         try {
             Thread.currentThread().sleep(1000);
