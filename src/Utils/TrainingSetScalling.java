@@ -22,7 +22,7 @@ public class TrainingSetScalling {
     private static final int WIDTH =640/6, HEIGHT=480/6;
     
     public static void main(String[] args) {
-        new TrainingSetScalling().resizeAll(Config.dataPath);
+        new TrainingSetScalling().resizeAll(Config.falseDataPath);
     }
 
     public void resizeAll(String source) {

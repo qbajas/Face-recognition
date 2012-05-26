@@ -8,6 +8,7 @@ import data.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.mathutil.randomize.ConsistentRandomizer;
 import org.encog.ml.data.MLDataPair;
@@ -41,6 +42,7 @@ public class ANN implements Serializable{
     private transient DataProcessor processor;
     private transient ImageProcessor imageProcessor;
     private transient Logger logger; 
+    private transient List<TrainingListener> listeners;
     
     ANN(DataLoader loader) {
         this.processor = loader.getDataProcessor();
@@ -50,10 +52,6 @@ public class ANN implements Serializable{
     }
 
     public void train(TrainMethod method, boolean forceTraining) {
-        
-        if(!loader.isLoaded())
-            loader.loadData(Config.dataPath);
-                
         if (trained && !forceTraining) {
             logger.log("ANN is trained and ready to use");
             return;
@@ -90,20 +88,37 @@ public class ANN implements Serializable{
             @Override
             public void run() {
                 int epoch = 1;
+                
+                double trainAcc = 0;
+                double error = 0;
+                double classAcc = 0;
+                int falseCount = 0;
+                
+                MLDataSet generalizationSet = loader.getGeneralizationSet();
+                MLDataSet testSet = loader.getTestSet();
+                MLDataSet falseSet = loader.getFalseSet();
+                
+                notifyStarted();
                 do {
                     train.iteration();
+                    error = train.getError();
+                    trainAcc = getAccuracy(trainSet);
+                    
                     logger.log("Epoch " + epoch + " Error: " + train.getError());
                     logger.log("Accuracy = "+getAccuracy(trainSet));
                     epoch++;
+                    
                 } while (getAccuracy(trainSet) < minAccuracy  && epoch<maxIt);
 
                 trained = true;
+                notifyFinished();
             }
         }).start();
 
     }
 
 
+    
 
     private void getANN(int inputs, int hidden, int outputs) {
 
@@ -148,8 +163,8 @@ public class ANN implements Serializable{
     
     public double getAccuracy(MLDataSet set){
         Iterator<MLDataPair> it = set.iterator();
-        MLDataPair pair = null;
-        double[] output = null;
+        MLDataPair pair;
+        double[] output;
         int counter = 0;
         while(it.hasNext()){
             pair = it.next();
@@ -214,6 +229,56 @@ public class ANN implements Serializable{
         processor = loader.getDataProcessor();
     }
 
-    
+    public int getMaxIt() {
+        return maxIt;
+    }
+
+    public void setMaxIt(int maxIt) {
+        this.maxIt = maxIt;
+    }
+
+    public double getMinAccuracy() {
+        return minAccuracy;
+    }
+
+    public void setMinAccuracy(double minAccuracy) {
+        this.minAccuracy = minAccuracy;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public void addTrainingListener(TrainingListener listener){
+        listeners.add(listener);
+    }
  
+    public void removeTrainingListeners(){
+        listeners.clear();
+    }
+
+    public List<TrainingListener> getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(List<TrainingListener> listeners) {
+        this.listeners = listeners;
+    }
+    
+    private void notifyStarted(){
+        for(TrainingListener listener:listeners)
+            listener.trainingStarted();
+    }
+    
+    private void notifyFinished(){
+        for(TrainingListener listener:listeners)
+            listener.trainingFinished();
+    }
+    
+
+    
 }
