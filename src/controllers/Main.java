@@ -1,12 +1,13 @@
 package controllers;
 
 import ann.ANN;
-import ann.ANNManager;
-import data.ImageToVectorProcessor;
-import data.PCADataProcessor;
 import java.awt.EventQueue;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import views.StartView;
 
 public class Main {
@@ -18,16 +19,12 @@ public class Main {
 	public static void main(String[] args) {
             
             /////////////TEST/////////////////////////////////////////////////////////////
-//		
+		
 //          ANNManager annManager = new ANNManager();
-//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(250), true);
-//          ann.train(ANN.TrainMethod.ResilentPropagation, true);
-//        try {
-//            Thread.currentThread().sleep(1000);
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//          annManager.saveANN(ann);
+//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(100), false);
+//
+//          test(Config.dataPath,Config.falseDataPath,ann);
+          
     
             ////////////////////////////////////////////////////////////////////////
             
@@ -46,4 +43,39 @@ public class Main {
 		});
 	}
 	
+        
+        public static void test(String source, String falseSource, ANN ann) {
+        File mainFolder = new File(source);
+        File subFolders[] = mainFolder.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+
+        FileFilter jpgFilter = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().toLowerCase().endsWith(".jpg");
+            }
+        };
+
+        File images[];
+        
+        System.out.println("Testing...");
+        for (File folder : subFolders) {
+            System.out.println(folder.getName());
+            images = folder.listFiles(jpgFilter);
+
+            for (File image : images) {
+                try {
+                    System.out.println(image.getName() +"  subject= "+ann.getSubjectNbr(ImageIO.read(image)) );
+                } catch (IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+           
+            }
+        }
+       
+    }
 }

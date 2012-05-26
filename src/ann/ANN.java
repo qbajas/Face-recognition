@@ -23,31 +23,29 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
  *
  * @author Michal
  */
-public class ANN implements Serializable{
+public class ANN implements Serializable {
+
     private static final long serialVersionUID = 12L;
-
-
     private double momentum = 0.3;
     private double learnRate = 0.7;
     private double errorRate = 0.01;
-    private int maxIt = 100;
+    private int maxIt = 30;
     private double minAccuracy = 1;
-    
     private double threshold = 0.8;
-    
     boolean trained = false;
     private BasicNetwork network;
     private transient DataLoader loader;
     private transient DataProcessor processor;
     private transient ImageProcessor imageProcessor;
-    private transient Logger logger; 
+    private transient Logger logger;
     private transient List<TrainingListener> listeners;
-    
+
     ANN(DataLoader loader) {
         this.processor = loader.getDataProcessor();
         this.imageProcessor = loader.getImageProcessor();
         this.loader = loader;
         logger = new Logger();
+
     }
 
     public void train(TrainMethod method, boolean forceTraining) {
@@ -55,18 +53,19 @@ public class ANN implements Serializable{
             logger.log("ANN is trained and ready to use");
             return;
         }
-          
+
         final Propagation train;
         final MLDataSet trainSet = loader.getTrainingSet();
         int input = trainSet.getInputSize();
         int output = trainSet.getIdealSize();
         int hidden = 300;
-        
-        if(network==null)
-            getANN(input,hidden,output);
-        
+
+        if (network == null) {
+            getANN(input, hidden, output);
+        }
+
         new ConsistentRandomizer(-1, 1, 500).randomize(network);
-        
+
         switch (method) {
             case ResilentPropagation: {
                 logger.log("Training using ResilentPropagation");
@@ -81,46 +80,40 @@ public class ANN implements Serializable{
             }
         }
 
-        
-        new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                int epoch = 1;
-                
-                double trainAcc ;
-                double error ;
-                double genAcc;
-                
-                MLDataSet generalizationSet = loader.getGeneralizationSet();
+        int epoch = 1;
 
-                
-                notifyStarted();
-                do {
-                    train.iteration();
-                    error = train.getError();
-                    trainAcc = getAccuracy(trainSet);
-                    genAcc= getAccuracy(generalizationSet);
-                    
-                    logger.log("Epoch " + epoch + " Error: " + error);
-                    logger.log("Training set accuracy = "+trainAcc);
-                    logger.log("Generalization set accuracy" + genAcc);
-                    
-                    epoch++;
-                    
-                    notifyUpdated(error, trainAcc, genAcc);                    
-                    
-                } while ( (getAccuracy(trainSet) < minAccuracy || getAccuracy(generalizationSet) <minAccuracy)  && epoch<maxIt);
+        double trainAcc;
+        double error;
+        double genAcc;
 
-                trained = true;
-                notifyFinished();
-            }
-        }).start();
+        MLDataSet generalizationSet = loader.getGeneralizationSet();
+
+
+        notifyStarted();
+        do {
+            train.iteration();
+            error = train.getError();
+            trainAcc = getAccuracy(trainSet);
+            genAcc = getAccuracy(generalizationSet);
+
+            logger.log("Epoch " + epoch + " Error: " + error);
+            logger.log("Training set accuracy = " + trainAcc);
+            logger.log("Generalization set accuracy" + genAcc);
+
+            epoch++;
+
+            notifyUpdated(error, trainAcc, genAcc);
+
+        } while ((getAccuracy(trainSet) < minAccuracy || getAccuracy(generalizationSet) < minAccuracy) && epoch < maxIt);
+
+        trained = true;
+        notifyFinished();
+        logger.log("Finished");
+
+
 
     }
-
-
-    
 
     private void getANN(int inputs, int hidden, int outputs) {
 
@@ -135,7 +128,9 @@ public class ANN implements Serializable{
 
     public int getSubjectNbr(BufferedImage img) {
         double[] input = processor.getProjection(imageProcessor.process(img));
-        return getSubject(input);
+        double[] output = new double[network.getOutputCount()];
+        network.compute(input, output);
+        return getSubject2(output);
     }
 
     public void setImageProcessor(ImageProcessor imageProcessor) {
@@ -163,55 +158,72 @@ public class ANN implements Serializable{
         return errorRate;
     }
     
-    private int getSubject(double[] output){
-        
-        int it=0;
-        double max=output[0];
-        
-        for(int i=1;i<output.length;++i)
-            if(output[i]>max){
+    private int getSubject2(double[] output) {
+
+        int it = 0;
+        double max = output[0];
+
+        for (int i = 1; i < output.length; ++i) {
+            if (output[i] > max) {
                 it = i;
                 max = output[i];
             }
-        return max>threshold? it:0;
+        }
+        return max > threshold ? it+1 : 0;
     }
-    
-    public double getAccuracy(MLDataSet set){
+
+    private int getSubject(double[] output) {
+
+        int it = 0;
+        double max = output[0];
+
+        for (int i = 1; i < output.length; ++i) {
+            if (output[i] > max) {
+                it = i;
+                max = output[i];
+            }
+        }
+        return max > threshold ? it : 0;
+    }
+
+    public double getAccuracy(MLDataSet set) {
         Iterator<MLDataPair> it = set.iterator();
         MLDataPair pair;
         double[] output;
         int counter = 0;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             pair = it.next();
             output = new double[pair.getIdealArray().length];
             network.compute(pair.getInputArray(), output);
             //if(compare(pair.getIdealArray(),output,threshold))
-            if(getSubject(pair.getIdealArray()) == getSubject(output)){
-                counter++;  
-              //  System.out.println(getSubject(output));
+            if (getSubject(pair.getIdealArray()) == getSubject(output)) {
+                counter++;
+                //  System.out.println(getSubject(output));
             }
-                  
+
         }
-        
-        return (double)counter/set.getRecordCount();
+
+        return (double) counter / set.getRecordCount();
     }
-    
-    
-    private boolean compare(double[] ideal,double[] output){
-        if(ideal.length != output.length)
+
+    private boolean compare(double[] ideal, double[] output) {
+        if (ideal.length != output.length) {
             return false;
+        }
         int i;
         int maxInd = 0;
         double max = output[0];
-        for(i=1;i<output.length;++i)
-            if(max<output[i]){
+        for (i = 1; i < output.length; ++i) {
+            if (max < output[i]) {
                 max = output[i];
                 maxInd = i;
             }
-        if(max<threshold || ideal[maxInd]!=1)
+        }
+        if (max < threshold || ideal[maxInd] != 1) {
             return false;
+        }
         return true;
-        
+
     }
 
     public void setErrorRate(double errorRate) {
@@ -272,11 +284,11 @@ public class ANN implements Serializable{
         this.threshold = threshold;
     }
 
-    public void addTrainingListener(TrainingListener listener){
+    public void addTrainingListener(TrainingListener listener) {
         listeners.add(listener);
     }
- 
-    public void removeTrainingListeners(){
+
+    public void removeTrainingListeners() {
         listeners.clear();
     }
 
@@ -287,22 +299,22 @@ public class ANN implements Serializable{
     public void setListeners(List<TrainingListener> listeners) {
         this.listeners = listeners;
     }
-    
-    private void notifyStarted(){
-        for(TrainingListener listener:listeners)
-            listener.trainingStarted();
-    }
-    
-    private void notifyFinished(){
-        for(TrainingListener listener:listeners)
-            listener.trainingFinished();
-    }
-    
-    private void notifyUpdated(double errorRate, double trainingAccuracy, double generalizationAccuracy){
-        for(TrainingListener listener:listeners)
-            listener.trainingUpdate(errorRate, trainingAccuracy, generalizationAccuracy);
-    }
-    
 
-    
+    private void notifyStarted() {
+        for (TrainingListener listener : listeners) {
+            listener.trainingStarted();
+        }
+    }
+
+    private void notifyFinished() {
+        for (TrainingListener listener : listeners) {
+            listener.trainingFinished();
+        }
+    }
+
+    private void notifyUpdated(double errorRate, double trainingAccuracy, double generalizationAccuracy) {
+        for (TrainingListener listener : listeners) {
+            listener.trainingUpdate(errorRate, trainingAccuracy, generalizationAccuracy);
+        }
+    }
 }

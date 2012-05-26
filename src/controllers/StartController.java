@@ -51,11 +51,18 @@ public class StartController {
 			return;
 		}
 
-		if (ann == null)
+                new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                if (ann == null)
 			ann = createANN(100, false);
 		
 		int index = ann.getSubjectNbr(loadedPicture);
 		System.out.println("Recognized image number " + index);
+            }
+        }).start();
+
 	}
 
 	public void openAdvancedSettings(StartView view) {
@@ -65,14 +72,21 @@ public class StartController {
 
 	}
 
-	public void train(int pcaSize, ANN.TrainMethod trainMethod) {
+	public void train(int pcaSize,final ANN.TrainMethod trainMethod) {
 		if (ann == null)
 			ann = createANN(pcaSize,true);
 		
-		ANNManager manager = new ANNManager();
+		final ANNManager manager = new ANNManager();
 		//train
-		ann.train(trainMethod, true);
-		manager.saveANN(ann);				
+                new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                ann.train(trainMethod, true);
+		manager.saveANN(ann);	
+            }
+        }).start();
+					
 	}
 	
 	
