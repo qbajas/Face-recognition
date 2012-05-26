@@ -24,7 +24,7 @@ import javax.media.jai.operator.MedianFilterDescriptor;
  */
 public class TrainingSetScalling {
     private static final int margin=15;
-    private static final int WIDTH =(640-2*margin)/4, HEIGHT=(480-2*margin)/4;
+    private static final int WIDTH =(640-2*margin)/6, HEIGHT=(480-2*margin)/6;
     
     public static void main(String[] args) {
         new TrainingSetScalling().resizeAll(Config.dataPath);
@@ -76,9 +76,9 @@ public class TrainingSetScalling {
                     BufferedImage img = ImageIO.read(image); 
 
                     RenderedOp op = MedianFilterDescriptor.create(img, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
-                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
-                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
-                    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
+                //    op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 3, null);
+                 //   op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
+                 //   op = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5, null);
                  //   RenderedOp op2 = MedianFilterDescriptor.create(op, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 12, null);
 //                    op2 = MedianFilterDescriptor.create(op2, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 7, null);
 //                    

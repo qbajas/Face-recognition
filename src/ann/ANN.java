@@ -30,7 +30,7 @@ public class ANN implements Serializable{
     private double momentum = 0.3;
     private double learnRate = 0.7;
     private double errorRate = 0.01;
-    private int maxIt = 10;
+    private int maxIt = 100;
     private double minAccuracy = 1;
     
     private double threshold = 0.8;
@@ -188,7 +188,7 @@ public class ANN implements Serializable{
             //if(compare(pair.getIdealArray(),output,threshold))
             if(getSubject(pair.getIdealArray()) == getSubject(output)){
                 counter++;  
-                System.out.println(getSubject(output));
+              //  System.out.println(getSubject(output));
             }
                   
         }
