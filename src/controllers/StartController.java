@@ -13,6 +13,7 @@ import data.DataProcessor;
 import data.ImageToVectorProcessor;
 import data.PCADataProcessor;
 
+import Utils.Config;
 import ann.ANN;
 import ann.ANNManager;
 
@@ -21,7 +22,7 @@ import views.FileChooser;
 import views.StartView;
 
 public class StartController {
-	
+
 	private ANN ann;
 	private BufferedImage loadedPicture;
 
@@ -34,7 +35,7 @@ public class StartController {
 		try {
 			loadedPicture = ImageIO.read(f);
 			view.yourImageLabel.setIcon(new ImageIcon(loadedPicture));
-			System.out.println("Image " +f.getName()+ " loaded.");
+			System.out.println("Image " + f.getName() + " loaded.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Image not recognized");
 		}
@@ -42,26 +43,35 @@ public class StartController {
 	}
 
 	// handles click on 'find a person' from start view
-	public void findPerson() {
+	public void findPerson(StartView view) {
 		// picture was not loaded, cant find it
-		if (loadedPicture==null)
-		{
+		if (loadedPicture == null) {
 			System.out.println("Please load a picture first !");
 			return;
 		}
-
-		//network was not trained, cant use it
-		if (ann == null)
-		{
-			System.out.println("You have to train the network first !");
-			return;
+		// network was not trained, cant use it
+		if (ann == null) {
+			// System.out.println("You have to train the network first !");
+			// return;
+			ann = createANN(100, false);
 		}
-
 		int index = ann.getSubjectNbr(loadedPicture);
-		System.out.println("Recognized image number " + index);
-            
+		if (index != 0) {
+			System.out.println("Recognized person number " + index);
 
-
+			String path = Config.dataPath + "/Subject"
+					+ String.format("%02d", index) + "/A_"
+					+ String.format("%02d", index) + "_0.Jpg";
+			try {
+				BufferedImage img = ImageIO.read(new File(path));
+				view.personFoundLabel.setIcon(new ImageIcon(img));
+			} catch (IOException e) {
+				System.out.println("Error - image not found. Path: " + path);
+				//e.printStackTrace();
+			}
+		}
+		else
+			System.out.println("Image not recognized.");
 	}
 
 	public void openAdvancedSettings(StartView view) {
@@ -71,26 +81,25 @@ public class StartController {
 
 	}
 
-	public void train(int pcaSize,final ANN.TrainMethod trainMethod) {
+	public void train(int pcaSize, final ANN.TrainMethod trainMethod) {
 		if (ann == null)
-			ann = createANN(pcaSize,false); //dont create a new ann if already exists
-		
-		final ANNManager manager = new ANNManager();
-		//train
-                new Thread(new Runnable() {
+			ann = createANN(pcaSize, false); // dont create a new ann if already
+												// exists
 
-            @Override
-            public void run() {
-                ann.train(trainMethod, true);
-		manager.saveANN(ann);	
-            }
-        }).start();
-					
+		final ANNManager manager = new ANNManager();
+		// train
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				ann.train(trainMethod, true);
+				manager.saveANN(ann);
+			}
+		}).start();
 
 	}
-	
-	
-	private ANN createANN(int pcaSize, boolean forceNew){
+
+	private ANN createANN(int pcaSize, boolean forceNew) {
 		ANNManager manager = new ANNManager();
 		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);

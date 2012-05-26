@@ -52,6 +52,7 @@ public class StartView {
 	
 	public JPanel leftPanel = new JPanel();
 	public JLabel yourImageLabel = new JLabel("");
+	public JLabel personFoundLabel = new JLabel("");
 	private JTextField textField;
 	
 	/**
@@ -96,10 +97,10 @@ public class StartView {
 		frame.getContentPane().add(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setIcon(new ImageIcon("img/anonymousAvatar.png"));
-		panel_1.add(lblNewLabel_1);
+		
+		personFoundLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		personFoundLabel.setIcon(new ImageIcon("img/anonymousAvatar.png"));
+		panel_1.add(personFoundLabel);
 		
 		
 		JLabel lblPersonFound = new JLabel("Person found:");
@@ -110,7 +111,7 @@ public class StartView {
 		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				controller.findPerson();
+				controller.findPerson(view);
 			}
 		});
 		btnFindAPerson.setBounds(445, 347, 300, 23);
