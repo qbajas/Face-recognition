@@ -27,8 +27,8 @@ public class ImageTrainingSetLoader implements DataLoader {
     private MLDataSet falseSet;
     private boolean loaded = false;
     private static String[] imagesPath = {
-        "_0.jpg", "_+05.jpg", "_+25.jpg", "_+45.jpg", "_+75.jpg", "_-05.jpg",
-        "_-25.jpg", "_-45.jpg", "_-75.jpg", "_+5.jpg", "_-5.jpg"
+        "_0.jpg", "_+05.jpg","_+15.jpg", "_+25.jpg", "_+45.jpg", "_+75.jpg", "_-05.jpg",
+        "_-15.jpg", "_-25.jpg", "_-45.jpg", "_-75.jpg", "_+5.jpg", "_-5.jpg"
     };
     private ImageProcessor imgProcessor;
     private DataProcessor dataProcessor;
@@ -90,7 +90,8 @@ public class ImageTrainingSetLoader implements DataLoader {
 
         LinkedList<MLDataPair> trainPairs = new LinkedList<>();
         LinkedList<MLDataPair> pairs = new LinkedList<>();
-
+        
+        System.out.println("Loading...");
         for (File folder : subFolders) {
             subjectNbr = Integer.parseInt(folder.getName().replace("Subject", ""));
             System.out.println(folder.getName());
@@ -130,10 +131,11 @@ public class ImageTrainingSetLoader implements DataLoader {
         
         generalizationSet = new BasicMLDataSet();
         testSet = new BasicMLDataSet();
+        falseSet = new BasicMLDataSet();
         
-        int i=0;
+        int i=-1;
         for(MLDataPair pair:pairs){
-            if(i<=counter)
+            if(++i<counter)
                 generalizationSet.add(getPair(dataProcessor.getProjection(pair.getInputArray()), pair.getIdealArray()));
             else
                 testSet.add(getPair(dataProcessor.getProjection(pair.getInputArray()), pair.getIdealArray()));
@@ -141,8 +143,6 @@ public class ImageTrainingSetLoader implements DataLoader {
         pairs = null;
         System.out.println("Generalization set size = " +generalizationSet.size());
         System.out.println("Test set size = " +testSet.size());
-        
-        loaded = true;
         
         mainFolder = new File(falseSource);
         subFolders = mainFolder.listFiles(new FileFilter() {
@@ -153,25 +153,18 @@ public class ImageTrainingSetLoader implements DataLoader {
         });
         
         for (File folder : subFolders) {
-            subjectNbr = Integer.parseInt(folder.getName().replace("Subject", ""));
             System.out.println(folder.getName());
             images = folder.listFiles(jpgFilter);
-
-            double output[] = new double[subjectsCount];
-            output[subjectNbr - 1] = 1.0;
-
             for (File image : images) {
                 try {
-                    if (testFilter.accept(image)) {
-                        trainPairs.add(getPair(imgProcessor.process(ImageIO.read(image)), container.getIdealOutput(subjectNbr)));
-                    } else {
-                        pairs.add(getPair(imgProcessor.process(ImageIO.read(image)), container.getIdealOutput(subjectNbr)));
-                    }
+                        falseSet.add(getPair(dataProcessor.getProjection(imgProcessor.process(ImageIO.read(image))), container.getIdealOutput(0)));
                 } catch (IOException ex) {
                     throw new RuntimeException(ex.getMessage());
                 }
             }
         }
+        System.out.println("False positive test set size = "+falseSet.size());
+        loaded = true;
     }
 
     private MLDataPair getPair(double[] input, double[] output) {

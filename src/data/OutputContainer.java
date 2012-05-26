@@ -19,7 +19,7 @@ public class OutputContainer {
     }
     
     public double[] getIdealOutput(int subjectNbr){
-        if(subjectNbr<0 || subjectNbr>outputs.length)
+        if(subjectNbr<0 || subjectNbr>=outputs.length)
             return outputs[0]; //wyjscie dla twarzy nierozpoznanej
         return outputs[subjectNbr];
     }

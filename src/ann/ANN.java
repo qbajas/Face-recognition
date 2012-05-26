@@ -1,6 +1,5 @@
 package ann;
 
-import Utils.Config;
 import Utils.Logger;
 import data.DataLoader;
 import data.DataProcessor;
@@ -34,7 +33,7 @@ public class ANN implements Serializable{
     private int maxIt = 1000;
     private double minAccuracy = 1;
     
-    private double threshold = 0.9;
+    private double threshold = 0.8;
     
     boolean trained = false;
     private BasicNetwork network;
@@ -89,26 +88,27 @@ public class ANN implements Serializable{
             public void run() {
                 int epoch = 1;
                 
-                double trainAcc = 0;
-                double error = 0;
-                double classAcc = 0;
-                int falseCount = 0;
+                double trainAcc ;
+                double error ;
+                double genAcc;
                 
                 MLDataSet generalizationSet = loader.getGeneralizationSet();
-                MLDataSet testSet = loader.getTestSet();
-                MLDataSet falseSet = loader.getFalseSet();
+
                 
                 notifyStarted();
                 do {
                     train.iteration();
                     error = train.getError();
                     trainAcc = getAccuracy(trainSet);
+                    genAcc= getAccuracy(generalizationSet);
                     
-                    logger.log("Epoch " + epoch + " Error: " + train.getError());
-                    logger.log("Accuracy = "+getAccuracy(trainSet));
+                    logger.log("Epoch " + epoch + " Error: " + error);
+                    logger.log("Training set accuracy = "+trainAcc);
+                    logger.log("Generalization set accuracy" + genAcc);
+                    
                     epoch++;
                     
-                } while (getAccuracy(trainSet) < minAccuracy  && epoch<maxIt);
+                } while ( (getAccuracy(trainSet) < minAccuracy || getAccuracy(generalizationSet) <minAccuracy)  && epoch<maxIt);
 
                 trained = true;
                 notifyFinished();
@@ -161,6 +161,19 @@ public class ANN implements Serializable{
         return errorRate;
     }
     
+    private int getSubject(double[] output){
+        
+        int it=0;
+        double max=output[0];
+        
+        for(int i=1;i<output.length;++i)
+            if(output[i]>max){
+                it = i;
+                max = output[i];
+            }
+        return max>threshold? it:0;
+    }
+    
     public double getAccuracy(MLDataSet set){
         Iterator<MLDataPair> it = set.iterator();
         MLDataPair pair;
@@ -170,7 +183,8 @@ public class ANN implements Serializable{
             pair = it.next();
             output = new double[pair.getIdealArray().length];
             network.compute(pair.getInputArray(), output);
-            if(compare(pair.getIdealArray(),output,threshold))
+            //if(compare(pair.getIdealArray(),output,threshold))
+            if(getSubject(pair.getIdealArray()) == getSubject(output))
                 counter++;    
         }
         
@@ -178,7 +192,7 @@ public class ANN implements Serializable{
     }
     
     
-    private boolean compare(double[] ideal,double[] output, double thresh){
+    private boolean compare(double[] ideal,double[] output){
         if(ideal.length != output.length)
             return false;
         int i;
@@ -189,7 +203,7 @@ public class ANN implements Serializable{
                 max = output[i];
                 maxInd = i;
             }
-        if(max<thresh || ideal[maxInd]!=1)
+        if(max<threshold || ideal[maxInd]!=1)
             return false;
         return true;
         
