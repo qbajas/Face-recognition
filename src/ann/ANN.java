@@ -33,7 +33,9 @@ public class ANN implements Serializable {
     private double minAccuracy = 1;
     private double threshold = 0.8;
     boolean trained = false;
-    private BasicNetwork network;
+
+
+	private BasicNetwork network;
     private transient DataLoader loader;
     private transient DataProcessor processor;
     private transient ImageProcessor imageProcessor;
@@ -317,4 +319,9 @@ public class ANN implements Serializable {
             listener.trainingUpdate(errorRate, trainingAccuracy, generalizationAccuracy);
         }
     }
+
+    public boolean isTrained() {
+		return trained;
+	}
+    
 }

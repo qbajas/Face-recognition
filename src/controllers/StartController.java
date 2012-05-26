@@ -49,12 +49,16 @@ public class StartController {
 			System.out.println("Please load a picture first !");
 			return;
 		}
-		// network was not trained, cant use it
 		if (ann == null) {
-			// System.out.println("You have to train the network first !");
-			// return;
 			ann = createANN(100, false);
 		}
+		// if network was not trained, cant use it
+		if (!ann.isTrained()) {
+			System.out.println("You have to train the network first !");
+			ann = null; // nullify to make sure network is created during training
+			return;
+		}
+
 		int index = ann.getSubjectNbr(loadedPicture);
 		if (index != 0) {
 			System.out.println("Recognized person number " + index);
@@ -67,10 +71,9 @@ public class StartController {
 				view.personFoundLabel.setIcon(new ImageIcon(img));
 			} catch (IOException e) {
 				System.out.println("Error - image not found. Path: " + path);
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
-		}
-		else
+		} else
 			System.out.println("Image not recognized.");
 	}
 
