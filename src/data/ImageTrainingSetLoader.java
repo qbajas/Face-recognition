@@ -53,7 +53,6 @@ public class ImageTrainingSetLoader implements DataLoader {
         dataProcessor = new DataProcessor();
     }
 
-    @Override
     public void loadData(String source, String falseSource) {
         File mainFolder = new File(source);
         File subFolders[] = mainFolder.listFiles(new FileFilter() {

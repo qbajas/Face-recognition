@@ -62,16 +62,15 @@ public class StartController {
 
 	}
 
-	public void train() {
+	public void train(int pcaSize, ANN.TrainMethod trainMethod) {
 		ANNManager manager = new ANNManager();
-		DataProcessor dataProcessor = new PCADataProcessor(100);
+		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
 		ANN network = manager.getANN(imageProcessor, dataProcessor, false);
 		
 		//train
-		network.train(ANN.TrainMethod.ResilentPropagation, true);
-		manager.saveANN(network);
-				
+		network.train(trainMethod, true);
+		manager.saveANN(network);				
 	}
 
 }
