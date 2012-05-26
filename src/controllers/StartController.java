@@ -47,7 +47,7 @@ public class StartController {
 				icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
 
 		ANNManager manager = new ANNManager();
-		DataProcessor dataProcessor = new PCADataProcessor(100);
+		DataProcessor dataProcessor = new PCADataProcessor(100); // TODO change
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
 		ANN network = manager.getANN(imageProcessor, dataProcessor, false);
 		
