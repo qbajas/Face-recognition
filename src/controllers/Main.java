@@ -18,9 +18,9 @@ public class Main {
 	public static void main(String[] args) {
             
             /////////////TEST/////////////////////////////////////////////////////////////
-		/*
+	/*	
           ANNManager annManager = new ANNManager();
-          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(300), true);
+          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(200), true);
           ann.train(ANN.TrainMethod.ResilentPropagation, true);
         try {
             Thread.currentThread().sleep(1000);
@@ -28,7 +28,7 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
           annManager.saveANN(ann);
-      */
+     */
             ////////////////////////////////////////////////////////////////////////
             
           
