@@ -50,7 +50,7 @@ public class PCAManager {
             }
         }
 
-        System.out.println("Calculating PCA");
+        System.out.println("Calculating PCA. This may take a while ...");
         pca = new PCA(input, length);
         
         try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {

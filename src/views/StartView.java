@@ -34,6 +34,7 @@ import java.awt.Font;
 import javax.swing.UIManager;
 import java.awt.SystemColor;
 import javax.swing.border.LineBorder;
+import javax.swing.border.BevelBorder;
 
 public class StartView {
 
@@ -61,6 +62,7 @@ public class StartView {
 	private void initialize() {
 		
 		frame = new JFrame("Neural Network Face Recognition System");
+		frame.getContentPane().setBackground(SystemColor.inactiveCaptionBorder);
 		frame.setBounds(100, 100, 800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -74,6 +76,7 @@ public class StartView {
 		});
 		btnLoadAnImage.setBounds(39, 347, 300, 23);
 		frame.getContentPane().add(btnLoadAnImage);
+		leftPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
 		
 		leftPanel.setBackground(Color.WHITE);
@@ -83,15 +86,15 @@ public class StartView {
 		yourImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		
-		yourImageLabel.setIcon(new ImageIcon("img/anonymousAvatar.png"));
+		yourImageLabel.setIcon(new ImageIcon(StartController.avatarPath));
 		leftPanel.add(yourImageLabel);
 		
 		JLabel lblYourImage = new JLabel("Your image:");
+		leftPanel.add(lblYourImage, BorderLayout.NORTH);
 		lblYourImage.setHorizontalAlignment(SwingConstants.CENTER);
-		lblYourImage.setBounds(39, 11, 300, 14);
-		frame.getContentPane().add(lblYourImage);
 		
 		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(445, 36, 300, 300);
 		frame.getContentPane().add(panel_1);
@@ -99,14 +102,13 @@ public class StartView {
 		
 		
 		personFoundLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		personFoundLabel.setIcon(new ImageIcon("img/anonymousAvatar.png"));
+		personFoundLabel.setIcon(new ImageIcon(StartController.avatarPath));
 		panel_1.add(personFoundLabel);
 		
 		
 		JLabel lblPersonFound = new JLabel("Person found:");
+		panel_1.add(lblPersonFound, BorderLayout.NORTH);
 		lblPersonFound.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPersonFound.setBounds(445, 11, 300, 14);
-		frame.getContentPane().add(lblPersonFound);
 		
 		JButton btnFindAPerson = new JButton("2. Find this person !");
 		btnFindAPerson.addActionListener(new ActionListener() {
@@ -160,7 +162,7 @@ public class StartView {
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(128, 128, 128)));
-		panel.setBackground(new Color(255, 248, 220));
+		panel.setBackground(new Color(255, 255, 180));
 		panel.setBounds(-15, 410, 814, 78);
 		frame.getContentPane().add(panel);
 		
