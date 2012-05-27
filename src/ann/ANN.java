@@ -30,9 +30,9 @@ public class ANN implements Serializable {
     private double momentum = 0.3;
     private double learnRate = 0.7;
     private double errorRate = 0.01;
-    private int maxIt = 30;
+    private int maxIt = 110;
     private double minAccuracy = 1;
-    private double threshold = 0.8;
+    private double threshold = 0.95;
     boolean trained = false;
 
 
@@ -61,7 +61,7 @@ public class ANN implements Serializable {
         final MLDataSet trainSet = loader.getTrainingSet();
         int input = trainSet.getInputSize();
         int output = trainSet.getIdealSize();
-        int hidden = 300;
+        int hidden = 500;
 
         if (network == null) {
             getANN(input, hidden, output);
@@ -123,6 +123,7 @@ public class ANN implements Serializable {
         network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
         network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
+       // network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
         network.addLayer(new BasicLayer(new ActivationSigmoid(), false, outputs));
         network.getStructure().finalizeStructure();
         network.reset();
@@ -176,7 +177,7 @@ public class ANN implements Serializable {
                 max = output[i];
             }
         }
-        return max > threshold ? it+1 : 0;
+        return max >= threshold ? it+1 : 0;
     }
 
     private int getSubject(double[] output) {
@@ -190,7 +191,7 @@ public class ANN implements Serializable {
                 max = output[i];
             }
         }
-        return max > threshold ? it : 0;
+        return max >= threshold ? it : 0;
     }
 
     public double getAccuracy(MLDataSet set) {
@@ -203,6 +204,8 @@ public class ANN implements Serializable {
             output = new double[pair.getIdealArray().length];
             network.compute(pair.getInputArray(), output);
             //if(compare(pair.getIdealArray(),output,threshold))
+            double [] ideal = pair.getIdealArray();
+           
             if (getSubject(pair.getIdealArray()) == getSubject(output)) {
                 counter++;
             }

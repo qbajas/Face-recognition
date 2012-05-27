@@ -1,6 +1,10 @@
 package controllers;
 
+import Utils.Config;
 import ann.ANN;
+import ann.ANNManager;
+import data.ImageToVectorProcessor;
+import data.PCADataProcessor;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileFilter;
@@ -21,10 +25,10 @@ public class Main {
             /////////////TEST/////////////////////////////////////////////////////////////
 		
 //          ANNManager annManager = new ANNManager();
-//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(100), false);
-//
+//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(300), false);
+//          ann.setThreshold(0.7);
 //          test(Config.dataPath,Config.falseDataPath,ann);
-          
+//          
     
             ////////////////////////////////////////////////////////////////////////
             
