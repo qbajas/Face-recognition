@@ -29,15 +29,21 @@ public class PCADataProcessor extends DataProcessor {
         double [][] result = new double[data.length][];
         for(int row = 0;row<result.length;++row)
             result[row] = pcaHelper.projection(data[row]);
-        System.out.println("COLUMNS = "+ result[0].length);
         return result;
     }
 
     @Override
     public double[] getProjection(double[] data) {
-        if(pcaHelper == null)
-            throw new RuntimeException("Process data first!");
+        if(pcaHelper == null){
+            PCAManager pcaLoader = new PCAManager(Config.dataPath);
+            pcaHelper = pcaLoader.loadPCA(length);
+        }
 
+        if(pcaHelper==null){
+            System.out.println("Error, PCA file not found. Recalculating...");
+            return null;
+        }
+        
         return pcaHelper.projection(data);
     }
 

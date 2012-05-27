@@ -1,5 +1,6 @@
 package ann;
 
+import Utils.Config;
 import Utils.Logger;
 import data.DataLoader;
 import data.DataProcessor;
@@ -130,6 +131,10 @@ public class ANN implements Serializable {
 
     public int getSubjectNbr(BufferedImage img) {
         double[] input = processor.getProjection(imageProcessor.process(img));
+        if(input==null){
+            loader.loadData(Config.dataPath, Config.falseDataPath);
+            input = processor.getProjection(imageProcessor.process(img));
+        }
         double[] output = new double[network.getOutputCount()];
         network.compute(input, output);
         return getSubject2(output);
@@ -200,7 +205,6 @@ public class ANN implements Serializable {
             //if(compare(pair.getIdealArray(),output,threshold))
             if (getSubject(pair.getIdealArray()) == getSubject(output)) {
                 counter++;
-                //  System.out.println(getSubject(output));
             }
 
         }

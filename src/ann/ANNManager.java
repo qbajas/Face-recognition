@@ -17,7 +17,7 @@ import views.ConsoleOutput;
 public class ANNManager {
 
     Logger logger = new Logger();
-
+    DataLoader loader;
     /**
      * Tworzy nowa siec w oparciu o podane procesory danych, sam ustala rozmiar
      * wejsc, wyjsc, neuronow ukrytych.
@@ -32,7 +32,8 @@ public class ANNManager {
      */
     public ANN getANN(ImageProcessor imgProcessor, DataProcessor dataProcessor, boolean forceNew) {
         
-        DataLoader loader = new ImageTrainingSetLoader(imgProcessor, dataProcessor);
+        if(loader==null || !loader.getDataProcessor().getName().equals(dataProcessor.getName()))
+             loader = new ImageTrainingSetLoader(imgProcessor, dataProcessor);
         File file = new File(Config.dataPath + File.separatorChar + "ANN" + imgProcessor.getName() + dataProcessor.getName() + ".ann");
         ANN ann = null;
         if (!forceNew && file.exists()) {
@@ -48,7 +49,7 @@ public class ANNManager {
         ann.setLogger(logger);
         ann.setLoader(loader);
 
-        loader.loadData(Config.dataPath, Config.falseDataPath);
+        //loader.loadData(Config.dataPath, Config.falseDataPath);
 
         
         ann.setListeners(new LinkedList<TrainingListener>());
@@ -76,7 +77,6 @@ public class ANNManager {
             System.out.println("Saving ANN");
             out.writeObject(ann);
         } catch (IOException e) {
-            System.out.println("Cant save");
             logger.log("Can't save ANN");
         }
     }

@@ -90,7 +90,7 @@ public class ImageTrainingSetLoader implements DataLoader {
         LinkedList<MLDataPair> trainPairs = new LinkedList<>();
         LinkedList<MLDataPair> pairs = new LinkedList<>();
         
-        System.out.println("Loading...");
+        System.out.println("Loading dataSet ...");
         for (File folder : subFolders) {
             subjectNbr = Integer.parseInt(folder.getName().replace("Subject", ""));
             System.out.println(folder.getName());
@@ -198,6 +198,9 @@ public class ImageTrainingSetLoader implements DataLoader {
 
     @Override
     public MLDataSet getFalseSet() {
+        if(falseSet ==null){
+            loadData(Config.dataPath, Config.falseDataPath);
+        }
         return falseSet;
     }
 

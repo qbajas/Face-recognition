@@ -40,9 +40,6 @@ public class PCA implements Serializable{
 
         data = new DenseMatrix64F(input);
 
-        System.out.println("cols= " + data.getNumCols());
-        System.out.println("rows=" + data.getNumRows());
-
         componentsCount = c;
         mean = new double[input[0].length];
 
@@ -75,11 +72,9 @@ public class PCA implements Serializable{
         components = svd.getV(true);
         DenseMatrix64F W = svd.getW(null);
         SingularOps.descendingOrder(null, false, W, components, true);
-        System.out.println("L1= "+components.data.length);
         components.reshape(componentsCount, mean.length, true);
         DenseMatrix64F m = new DenseMatrix64F(components);
         components = m;
-        System.out.println("L2= "+components.data.length);
     }
 
     public double[] projection(double[] input) {
