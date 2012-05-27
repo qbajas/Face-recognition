@@ -18,111 +18,124 @@ import views.StartView;
 
 public class StartController {
 
-    private ANN ann;
-    private BufferedImage loadedPicture;
-    Thread worker;
+	private ANN ann;
+	private BufferedImage loadedPicture;
+	Thread worker;
+	
+	public static final String avatarPath = "img/anonymousAvatar.png";
 
-    // handles click on 'load image' from start view
-    // returns chosen file
-    public File openFileChooser(StartView view) {
-        FileChooser fc = new FileChooser();
-        File f = fc.LoadFile();
+	// handles click on 'load image' from start view
+	// returns chosen file
+	public File openFileChooser(StartView view) {
+		FileChooser fc = new FileChooser();
+		File f = fc.LoadFile();
 
-        try {
-            loadedPicture = ImageIO.read(f);
-            view.yourImageLabel.setIcon(new ImageIcon(loadedPicture));
-            System.out.println("Image " + f.getName() + " loaded.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Image not recognized");
-        }
-        return f;
-    }
+		try {
+			loadedPicture = ImageIO.read(f);
+			view.yourImageLabel.setIcon(new ImageIcon(loadedPicture));
+			System.out.println("Image " + f.getName() + " loaded.");
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Image not recognized");
+		}
+		return f;
+	}
 
- 
-    
-    // handles click on 'find a person' from start view
-    public void findPerson(final StartView view) {
-        if(worker!=null && worker.isAlive()){
-            JOptionPane.showMessageDialog(null, "Wait until current taks finish", "Wait", JOptionPane.WARNING_MESSAGE);
-             return;
-        }
-        worker = new Thread(new Runnable() {
+	// handles click on 'find a person' from start view
+	public void findPerson(final StartView view) {
+		if (worker != null && worker.isAlive()) {
+			JOptionPane.showMessageDialog(null,
+					"Wait until current taks finish", "Wait",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		worker = new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                // picture was not loaded, cant find it
-                if (loadedPicture == null) {
-                    System.out.println("Please load a picture first !");
-                    return;
-                }
-                if (ann == null) {
-                    ann = createANN(100, false);
-                }
-                // if network was not trained, cant use it
-                if (!ann.isTrained()) {
-                    System.out.println("You have to train the network first !");
-                    ann = null; // nullify to make sure network is created during training
-                    return;
-                }
+			@Override
+			public void run() {
+				// picture was not loaded, cant find it
+				if (loadedPicture == null) {
+					System.out.println("Please load a picture first !");
+					return;
+				}
+				if (ann == null) {
+					ann = createANN(100, false);
+				}
+				// if network was not trained (because it was not loaded from a file), cant use it
+				if (!ann.isTrained()) {
+					System.out.println("You have to train the network first !");
+					return;
+				}
 
-                int index = ann.getSubjectNbr(loadedPicture);
-                if (index != 0) {
-                    System.out.println("Recognized person number " + index);
+				int index = ann.getSubjectNbr(loadedPicture);
+				if (index != 0) {
+					System.out.println("Recognized person number " + index);
 
-                    String path = Config.dataPath + "/Subject"
-                            + String.format("%02d", index) + "/A_"
-                            + String.format("%02d", index) + "_0.Jpg";
-                    try {
-                        BufferedImage img = ImageIO.read(new File(path));
-                        view.personFoundLabel.setIcon(new ImageIcon(img));
-                    } catch (IOException e) {
-                        System.out.println("Error - image not found. Path: " + path);
-                        // e.printStackTrace();
-                    }
-                } else {
-                    System.out.println("Image not recognized.");
-                }
-            }
-        });
-        worker.start();
+					String path = Config.dataPath + "/Subject"
+							+ String.format("%02d", index) + "/A_"
+							+ String.format("%02d", index) + "_0.Jpg";
+					try {
+						BufferedImage img = ImageIO.read(new File(path));
+						view.personFoundLabel.setIcon(new ImageIcon(img));
+					} catch (IOException e) {
+						System.out.println("Error - image not found. Path: "
+								+ path);
+						// e.printStackTrace();
+					}
+				} else {
+					System.out.println("Image not recognized.");
+					view.personFoundLabel.setIcon(new ImageIcon(avatarPath));
+				}
+			}
+		});
+		worker.start();
 
-    }
+	}
 
-    public void openAdvancedSettings(StartView view) {
+	public void openAdvancedSettings(StartView view) {
 
-        AdvancedView frame = new AdvancedView();
-        frame.setVisible(true);
+		AdvancedView frame = new AdvancedView();
+		frame.setVisible(true);
 
-    }
+	}
 
-    public void train(final int pcaSize, final ANN.TrainMethod trainMethod) {
-        if(worker!=null && worker.isAlive()){
-            JOptionPane.showMessageDialog(null, "Wait until current taks finish", "Wait", JOptionPane.WARNING_MESSAGE);
-             return;
-        }
-        worker = new Thread(new Runnable() {
+	// network training
+	public void train(final int pcaSize, final ANN.TrainMethod trainMethod) {
+		if (worker != null && worker.isAlive()) {
+			JOptionPane.showMessageDialog(null,
+					"Wait until current taks finish", "Wait",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		worker = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// if no ann in memory
+				if (ann == null) {
+					ann = createANN(pcaSize, false); // dont create a new ann if already exists in a file
+				}
+				// create a new network if pca size was changed
+				DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
+				if (ann.getProcessor().getName() != dataProcessor.getName())
+				{
+					ann = null; // to garbage-collect old ann
+					ann = createANN(pcaSize, true);
+				}
+				// train
+				ann.train(trainMethod, true);
+				// save
+				final ANNManager manager = new ANNManager();
+				manager.saveANN(ann);
+			}
+		});
+		worker.start();
+	}
 
-            @Override
-            public void run() {
-                if (ann == null) {
-                    ann = createANN(pcaSize, false); // dont create a new ann if already
-                }												// exists
-
-                final ANNManager manager = new ANNManager();
-                // train
-
-                ann.train(trainMethod, true);
-                manager.saveANN(ann);
-            }
-        });
-        worker.start();
-    }
-
-    private ANN createANN(int pcaSize, boolean forceNew) {
-        ANNManager manager = new ANNManager();
-        DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
-        ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
-        ANN network = manager.getANN(imageProcessor, dataProcessor, forceNew);
-        return network;
-    }
+	
+	private ANN createANN(int pcaSize, boolean forceNew) {
+		ANNManager manager = new ANNManager();
+		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
+		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
+		ANN network = manager.getANN(imageProcessor, dataProcessor, forceNew);
+		return network;
+	}
 }
