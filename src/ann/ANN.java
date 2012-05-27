@@ -8,6 +8,7 @@ import data.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.mathutil.randomize.ConsistentRandomizer;
@@ -19,6 +20,8 @@ import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.Propagation;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+
+import controllers.NetworkStatsController;
 
 /**
  *
@@ -48,7 +51,6 @@ public class ANN implements Serializable {
         this.imageProcessor = loader.getImageProcessor();
         this.loader = loader;
         logger = new Logger();
-
     }
 
     public void train(TrainMethod method, boolean forceTraining) {

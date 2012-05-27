@@ -8,6 +8,8 @@ import data.ImageProcessor;
 import data.ImageTrainingSetLoader;
 import java.io.*;
 import java.util.LinkedList;
+
+import controllers.NetworkStatsController;
 import views.ConsoleOutput;
 
 /**
@@ -50,9 +52,9 @@ public class ANNManager {
         ann.setLoader(loader);
 
         //loader.loadData(Config.dataPath, Config.falseDataPath);
-
         
         ann.setListeners(new LinkedList<TrainingListener>());
+        ann.addTrainingListener(new NetworkStatsController());
         
         logger.log("Done.");
         return ann;
