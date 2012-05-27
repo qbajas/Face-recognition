@@ -26,7 +26,7 @@ public class ANN implements Serializable {
     private double learnRate = 0.7;
     private double errorRate = 0.01;
     private int maxIt = 150;
-    private double minAccuracy = 100;
+    private double minAccuracy = 94;
     private double threshold = 0.8;
     boolean trained = false;
 
@@ -45,7 +45,8 @@ public class ANN implements Serializable {
     }
 
     public void test(){
-        MLDataSet testSet = loader.getTrainingSet();
+        System.out.println("Testing network...");
+        MLDataSet testSet = loader.getTestSet();
         double acc = getAccuracy(testSet);
         System.out.println("Test set accuracy = "+ acc +" %");
     }
@@ -60,7 +61,7 @@ public class ANN implements Serializable {
         final MLDataSet trainSet = loader.getTrainingSet();
         int input = trainSet.getInputSize();
         int output = trainSet.getIdealSize();
-        int hidden = 800;
+        int hidden = 200;//input +output +40;
 
         if (network == null) {
             getANN(input, hidden, output);
@@ -99,9 +100,9 @@ public class ANN implements Serializable {
             trainAcc = getAccuracy(trainSet);
             genAcc = getAccuracy(generalizationSet);
 
-            logger.log("Epoch " + epoch + " Error: " + error);
-            logger.log("Training set accuracy = " + trainAcc);
-            logger.log("Generalization set accuracy" + genAcc);
+            logger.log("Epoch " + epoch + " Error= " + error);
+            logger.log("Training set accuracy= " + trainAcc);
+            logger.log("Generalization set accuracy= " + genAcc);
 
             epoch++;
 
@@ -190,7 +191,7 @@ public class ANN implements Serializable {
                 max = output[i];
             }
         }
-        return max >= threshold ? it : 0;
+        return max >= threshold ? it : -1;
     }
 
     public double getAccuracy(MLDataSet set) {

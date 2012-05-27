@@ -19,6 +19,7 @@ import views.StartView;
 public class StartController {
 
 	private ANN ann;
+        private ANNManager manager = new ANNManager();
 	private BufferedImage loadedPicture;
 	Thread worker;
 	
@@ -115,7 +116,7 @@ public class StartController {
 				}
 				// create a new network if pca size was changed
 				DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
-				if (ann.getProcessor().getName() != dataProcessor.getName())
+				if (!ann.getProcessor().getName().equals(dataProcessor.getName()))
 				{
 					ann = null; // to garbage-collect old ann
 					ann = createANN(pcaSize, true);
@@ -123,7 +124,7 @@ public class StartController {
 				// train
 				ann.train(trainMethod, true);
 				// save
-				final ANNManager manager = new ANNManager();
+                                ann.test();
 				manager.saveANN(ann);
 			}
 		});
@@ -132,7 +133,6 @@ public class StartController {
 
 	
 	private ANN createANN(int pcaSize, boolean forceNew) {
-		ANNManager manager = new ANNManager();
 		DataProcessor dataProcessor = new PCADataProcessor(pcaSize);
 		ImageToVectorProcessor imageProcessor = new ImageToVectorProcessor(true);
 		ANN network = manager.getANN(imageProcessor, dataProcessor, forceNew);
