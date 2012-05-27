@@ -24,7 +24,6 @@ public class ImageTrainingSetLoader implements DataLoader {
     private MLDataSet trainingSet;
     private MLDataSet testSet;
     private MLDataSet generalizationSet;
-    private MLDataSet falseSet;
     private boolean loaded = false;
     private static String[] imagesPath = {
         "_0.jpg", "_+05.jpg","_+10.jpg","_+15.jpg", "_+25.jpg", "_+45.jpg","_+65.jpg", "_+75.jpg","_+90.jpg",
@@ -53,7 +52,8 @@ public class ImageTrainingSetLoader implements DataLoader {
         dataProcessor = new DataProcessor();
     }
 
-    public void loadData(String source, String falseSource) {
+    @Override
+    public void loadData(String source) {
         File mainFolder = new File(source);
         File subFolders[] = mainFolder.listFiles(new FileFilter() {
             @Override
@@ -74,7 +74,7 @@ public class ImageTrainingSetLoader implements DataLoader {
             public boolean accept(File pathname) {
                 String name = pathname.getName();
                 for (String s : imagesPath) {
-                    if (name.toLowerCase().startsWith("a") && name.toLowerCase().endsWith(s.toLowerCase())) {
+                    if (/*name.toLowerCase().startsWith("a") &&*/ name.toLowerCase().endsWith(s.toLowerCase())) {
                         return true;
                     }
                 }
@@ -123,14 +123,12 @@ public class ImageTrainingSetLoader implements DataLoader {
         
         annInputs= null;
         annOutputs = null;
-        
-        System.out.println("Training set size = " +trainingSet.size());
+       
         Collections.shuffle(pairs);
         counter = (int) (pairs.size() *0.3); //30% pozostalych danych zbior generalizacyjny
         
         generalizationSet = new BasicMLDataSet();
         testSet = new BasicMLDataSet();
-        falseSet = new BasicMLDataSet();
         
         int i=-1;
         for(MLDataPair pair:pairs){
@@ -140,42 +138,21 @@ public class ImageTrainingSetLoader implements DataLoader {
                 testSet.add(getPair(dataProcessor.getProjection(pair.getInputArray()), pair.getIdealArray()));
         }
         pairs = null;
+        System.out.println("Training set size = " +trainingSet.size());
         System.out.println("Generalization set size = " +generalizationSet.size());
         System.out.println("Test set size = " +testSet.size());
         
-        mainFolder = new File(falseSource);
-        subFolders = mainFolder.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        });
-        
-        for (File folder : subFolders) {
-            System.out.println(folder.getName());
-            images = folder.listFiles(jpgFilter);
-            for (File image : images) {
-                try {
-                        falseSet.add(getPair(dataProcessor.getProjection(imgProcessor.process(ImageIO.read(image))), container.getIdealOutput(0)));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex.getMessage());
-                }
-            }
-        }
-        System.out.println("False positive test set size = "+falseSet.size());
         loaded = true;
     }
 
     private MLDataPair getPair(double[] input, double[] output) {
         return new BasicMLDataPair(new BasicMLData(input), new BasicMLData(output));
     }
-    
-
 
     @Override
     public MLDataSet getTrainingSet() {
         if (trainingSet == null) {
-            loadData(Config.dataPath, Config.falseDataPath);
+            loadData(Config.dataPath);
         }
         return trainingSet;
     }
@@ -183,7 +160,7 @@ public class ImageTrainingSetLoader implements DataLoader {
     @Override
     public MLDataSet getGeneralizationSet() {
         if (generalizationSet == null) {
-            loadData(Config.dataPath, Config.falseDataPath);
+            loadData(Config.dataPath);
         }
         return generalizationSet;
     }
@@ -191,17 +168,9 @@ public class ImageTrainingSetLoader implements DataLoader {
     @Override
     public MLDataSet getTestSet() {
         if (testSet == null) {
-            loadData(Config.dataPath, Config.falseDataPath);
+            loadData(Config.dataPath);
         }
         return testSet;
-    }
-
-    @Override
-    public MLDataSet getFalseSet() {
-        if(falseSet ==null){
-            loadData(Config.dataPath, Config.falseDataPath);
-        }
-        return falseSet;
     }
 
     @Override

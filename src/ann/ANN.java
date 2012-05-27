@@ -8,38 +8,29 @@ import data.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.mathutil.randomize.ConsistentRandomizer;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.Propagation;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
-import controllers.NetworkStatsController;
-
-/**
- *
- * @author Michal
- */
 public class ANN implements Serializable {
 
     private static final long serialVersionUID = 12L;
     private double momentum = 0.3;
     private double learnRate = 0.7;
     private double errorRate = 0.01;
-    private int maxIt = 110;
-    private double minAccuracy = 1;
-    private double threshold = 0.95;
+    private int maxIt = 150;
+    private double minAccuracy = 100;
+    private double threshold = 0.8;
     boolean trained = false;
 
-
-	private BasicNetwork network;
+    private BasicNetwork network;
     private transient DataLoader loader;
     private transient DataProcessor processor;
     private transient ImageProcessor imageProcessor;
@@ -53,6 +44,12 @@ public class ANN implements Serializable {
         logger = new Logger();
     }
 
+    public void test(){
+        MLDataSet testSet = loader.getTrainingSet();
+        double acc = getAccuracy(testSet);
+        System.out.println("Test set accuracy = "+ acc +" %");
+    }
+    
     public void train(TrainMethod method, boolean forceTraining) {
         if (trained && !forceTraining) {
             logger.log("ANN is trained and ready to use");
@@ -63,7 +60,7 @@ public class ANN implements Serializable {
         final MLDataSet trainSet = loader.getTrainingSet();
         int input = trainSet.getInputSize();
         int output = trainSet.getIdealSize();
-        int hidden = 500;
+        int hidden = 800;
 
         if (network == null) {
             getANN(input, hidden, output);
@@ -125,7 +122,7 @@ public class ANN implements Serializable {
         network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
         network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
-       // network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
+//        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hidden));
         network.addLayer(new BasicLayer(new ActivationSigmoid(), false, outputs));
         network.getStructure().finalizeStructure();
         network.reset();
@@ -135,7 +132,7 @@ public class ANN implements Serializable {
     public int getSubjectNbr(BufferedImage img) {
         double[] input = processor.getProjection(imageProcessor.process(img));
         if(input==null){
-            loader.loadData(Config.dataPath, Config.falseDataPath);
+            loader.loadData(Config.dataPath);
             input = processor.getProjection(imageProcessor.process(img));
         }
         double[] output = new double[network.getOutputCount()];
@@ -205,8 +202,6 @@ public class ANN implements Serializable {
             pair = it.next();
             output = new double[pair.getIdealArray().length];
             network.compute(pair.getInputArray(), output);
-            //if(compare(pair.getIdealArray(),output,threshold))
-            double [] ideal = pair.getIdealArray();
            
             if (getSubject(pair.getIdealArray()) == getSubject(output)) {
                 counter++;
@@ -214,7 +209,7 @@ public class ANN implements Serializable {
 
         }
 
-        return (double) counter / set.getRecordCount();
+        return  counter *100.0/set.getRecordCount();
     }
 
     private boolean compare(double[] ideal, double[] output) {

@@ -25,7 +25,7 @@ public class Main {
             /////////////TEST/////////////////////////////////////////////////////////////
 		
 //          ANNManager annManager = new ANNManager();
-//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(300), false);
+//          ANN ann = annManager.getANN(new ImageToVectorProcessor(true), new PCADataProcessor(100), false);
 //          ann.setThreshold(0.7);
 //          test(Config.dataPath,Config.falseDataPath,ann);
 //          

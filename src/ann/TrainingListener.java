@@ -26,15 +26,5 @@ public interface TrainingListener {
      */
     public void trainingUpdate(double errorRate, double trainingAccuracy, double generalizationAccuracy);
     
-    /**
-     * Wywolane przy kliknieciu na test, testuje siec na zbiorze testowym.
-     * @param errorRate Blad sredniokwadratowy na zbiorze
-     * @param accuracy Dokladnosc
-     * @param falsePositiveAccuracy Dokladnosc dla zbioru twarzy 'niedozwolonych'.
-     * Jesli twarz zostanie rozpoznana a nie nalezala do bazy twarzy jest to blad
-     * i dokladnosc spada.
-     */
-    public void testUpdate(double errorRate, double accuracy, double falsePositiveAccuracy);
-    
     
 }

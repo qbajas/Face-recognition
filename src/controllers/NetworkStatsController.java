@@ -1,10 +1,8 @@
 package controllers;
 
-import javax.swing.JFrame;
-
-import views.AdminChartPanel;
-import views.NetworkStats;
 import ann.TrainingListener;
+import javax.swing.JFrame;
+import views.AdminChartPanel;
 
 public class NetworkStatsController implements TrainingListener {
 
@@ -33,9 +31,5 @@ public class NetworkStatsController implements TrainingListener {
 
 	}
 
-	@Override
-	public void testUpdate(double errorRate, double accuracy,
-			double falsePositiveAccuracy) {
-	}
 
 }

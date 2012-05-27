@@ -17,15 +17,13 @@ public interface DataLoader {
 
     ImageProcessor getImageProcessor();
 
-    void loadData(String source, String falseData);
+    void loadData(String source);
     
     MLDataSet getTrainingSet();
     
     MLDataSet getGeneralizationSet();
     
     MLDataSet getTestSet();
-    
-    MLDataSet getFalseSet();
     
     public int getInputLength(String path);
     
