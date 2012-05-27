@@ -74,7 +74,6 @@ public class ANNManager {
         File file = new File(Config.dataPath + File.separatorChar + "ANN" + ann.getImageProcessor().getName() + ann.getProcessor().getName() + ".ann");
         try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
             logger.log("Saving ANN...");
-            System.out.println("Saving ANN");
             out.writeObject(ann);
         } catch (IOException e) {
             logger.log("Can't save ANN");

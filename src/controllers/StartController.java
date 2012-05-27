@@ -38,8 +38,14 @@ public class StartController {
         return f;
     }
 
+ 
+    
     // handles click on 'find a person' from start view
     public void findPerson(final StartView view) {
+        if(worker!=null && worker.isAlive()){
+            JOptionPane.showMessageDialog(null, "Wait until current taks finish", "Wait", JOptionPane.WARNING_MESSAGE);
+             return;
+        }
         worker = new Thread(new Runnable() {
 
             @Override
@@ -90,7 +96,10 @@ public class StartController {
     }
 
     public void train(final int pcaSize, final ANN.TrainMethod trainMethod) {
-
+        if(worker!=null && worker.isAlive()){
+            JOptionPane.showMessageDialog(null, "Wait until current taks finish", "Wait", JOptionPane.WARNING_MESSAGE);
+             return;
+        }
         worker = new Thread(new Runnable() {
 
             @Override
