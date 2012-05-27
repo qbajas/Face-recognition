@@ -63,7 +63,7 @@ public class StartView {
 		
 		frame = new JFrame("Neural Network Face Recognition System");
 		frame.getContentPane().setBackground(SystemColor.inactiveCaptionBorder);
-		frame.setBounds(100, 100, 800, 700);
+		frame.setBounds(0, 0, 800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
