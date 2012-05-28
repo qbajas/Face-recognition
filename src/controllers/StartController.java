@@ -124,11 +124,38 @@ public class StartController {
 				// train
 				ann.train(trainMethod, true);
 				// save
-                                ann.test();
+				ann.test();
 				manager.saveANN(ann);
 			}
 		});
 		worker.start();
+	}
+
+
+	// testing network
+	public void test() {
+		if (worker != null && worker.isAlive()) {
+			JOptionPane.showMessageDialog(null,
+					"Wait until current taks finish", "Wait",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		worker = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (ann == null) {
+					ann = createANN(100, false);
+				}
+				// if network was not trained (because it was not loaded from a file), cant use it
+				if (!ann.isTrained()) {
+					System.out.println("You have to train the network first !");
+					return;
+				}
+				ann.test();
+			}
+		});
+		worker.start();
+		
 	}
 
 	

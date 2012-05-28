@@ -132,22 +132,22 @@ public class StartView {
 		
 	
 		JLabel lblTrainingMethod = new JLabel("Training method");
-		lblTrainingMethod.setBounds(39, 428, 110, 14);
+		lblTrainingMethod.setBounds(39, 428, 102, 14);
 		frame.getContentPane().add(lblTrainingMethod);
 		
 		final JComboBox comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(TrainMethod.values()));
 		comboBox.setSelectedIndex(1);
-		comboBox.setBounds(39, 447, 203, 20);
+		comboBox.setBounds(138, 425, 150, 20);
 		frame.getContentPane().add(comboBox);
 		
 		JLabel lblPcaSize = new JLabel("PCA size (50-200)");
-		lblPcaSize.setBounds(278, 428, 145, 14);
+		lblPcaSize.setBounds(313, 428, 125, 14);
 		frame.getContentPane().add(lblPcaSize);
 		
 		textField = new JTextField();
 		textField.setText("100");
-		textField.setBounds(278, 447, 48, 20);
+		textField.setBounds(424, 425, 48, 20);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 		
@@ -157,13 +157,22 @@ public class StartView {
 				controller.train(Integer.parseInt(textField.getText()), (TrainMethod) comboBox.getSelectedItem());
 			}
 		});
-		btnTrainNetwork.setBounds(445, 446, 300, 23);
+		btnTrainNetwork.setBounds(39, 453, 433, 23);
 		frame.getContentPane().add(btnTrainNetwork);
+		
+		JButton btnTestNetwork = new JButton("Test network");
+		btnTestNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.test();
+			}
+		});
+		btnTestNetwork.setBounds(533, 440, 212, 23);
+		frame.getContentPane().add(btnTestNetwork);
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(128, 128, 128)));
 		panel.setBackground(new Color(255, 255, 180));
-		panel.setBounds(-15, 410, 814, 78);
+		panel.setBounds(-12, 408, 814, 78);
 		frame.getContentPane().add(panel);
 		
 	}
