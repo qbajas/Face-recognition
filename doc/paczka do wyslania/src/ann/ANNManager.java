@@ -1,0 +1,96 @@
+package ann;
+
+import Utils.Config;
+import Utils.Logger;
+import data.DataLoader;
+import data.DataProcessor;
+import data.ImageProcessor;
+import data.ImageTrainingSetLoader;
+import java.io.*;
+import java.util.LinkedList;
+
+import controllers.NetworkStatsController;
+import views.ConsoleOutput;
+
+/**
+ *
+ * @author Michal
+ */
+public class ANNManager {
+
+    Logger logger = new Logger();
+    DataLoader loader;
+    /**
+     * Tworzy nowa siec w oparciu o podane procesory danych, sam ustala rozmiar
+     * wejsc, wyjsc, neuronow ukrytych.
+     *
+     * @param imgProcessor Procesor obrazu, jesli null to konwersja na obraz w
+     * odcieni szarosci i zmiana na double[]
+     * @param dataProcessor Procesor przetwarzajacy wstepnie dane, domyslnie PCA
+     * o rozmiarze 200
+     * @param forceNew Tworzy nowa siec i ewentualnie przelicza PCA nawet jesli
+     * siec jest zapisana i mozna ja odczytac
+     * @return Wczytana lub utworzona siec neuronowa
+     */
+    public ANN getANN(ImageProcessor imgProcessor, DataProcessor dataProcessor, boolean forceNew) {
+        
+        if(loader==null || !loader.getDataProcessor().getName().equals(dataProcessor.getName()))
+             loader = new ImageTrainingSetLoader(imgProcessor, dataProcessor);
+        File file = new File(Config.dataPath + File.separatorChar + "ANN" + imgProcessor.getName() + dataProcessor.getName() + ".ann");
+        ANN ann = null;
+        if (!forceNew && file.exists()) {
+            logger.log("Loading ANN...");
+            ann=loadANN(file);
+        }
+            
+        if(ann==null){
+            logger.log("Creating new ANN...");
+            ann = new ANN(loader);
+        }
+        
+        ann.setLogger(logger);
+        ann.setLoader(loader);
+
+        //loader.loadData(Config.dataPath, Config.falseDataPath);
+        
+        ann.setListeners(new LinkedList<TrainingListener>());
+        ann.addTrainingListener(new NetworkStatsController());
+        
+        logger.log("Done.");
+        return ann;
+    }
+
+    private ANN loadANN(File file) {
+        ANN ann;
+        try (FileInputStream fileIn = new FileInputStream(file); ObjectInputStream in = new ObjectInputStream(fileIn)) {
+            logger.log("Loading ANN Object...");
+            ann = (ANN) in.readObject();
+            return ann;
+        } catch (ClassNotFoundException | IOException e) {
+            logger.log("Can't load...");
+        }
+        return null;
+    }
+
+    public void saveANN(ANN ann) {
+        File file = new File(Config.dataPath + File.separatorChar + "ANN" + ann.getImageProcessor().getName() + ann.getProcessor().getName() + ".ann");
+        try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            logger.log("Saving ANN...");
+            out.writeObject(ann);
+        } catch (IOException e) {
+            logger.log("Can't save ANN");
+        }
+    }
+
+    public void removeConsoleOutputs() {
+        logger.removeConsoleOutputs();
+    }
+
+    public void removeConsoleOutput(ConsoleOutput output) {
+        logger.removeConsoleOutput(output);
+    }
+
+    public void addConsoleOutput(ConsoleOutput output) {
+        logger.addConsoleOutput(output);
+    }
+}
